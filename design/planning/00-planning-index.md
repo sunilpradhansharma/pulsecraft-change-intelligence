@@ -9,9 +9,9 @@
 
 **Phase:** Active implementation — schemas and config complete, agent authoring next.
 
-**Last completed:** Prompt 07.7 (demo reliability fix — expanded bu_alpha owned_product_areas to align with SignalScribe's observed impact_areas vocabulary; fixture 001 now deterministically reaches AWAITING_HITL in 5/5 consecutive runs).
+**Last completed:** Prompt 08 (ingest skills — 5 source adapters, normalizer, redaction helper, stub source fixtures, CLI restructured to command group with `ingest` subcommand; 390 tests passing).
 
-Planning phases P0–P2 are complete. The prompt-driven build sequence is at prompt 07.7. Prompt 08 (ingest adapter skills) is next.
+Planning phases P0–P2 are complete. The prompt-driven build sequence is at prompt 08. Prompt 09 (registry, policy, audit skills) is next.
 
 ---
 
@@ -85,6 +85,14 @@ Planning phases P0–P2 are complete. The prompt-driven build sequence is at pro
 | 47 | Full pipeline tests | `tests/integration/orchestrator/test_full_pipeline.py` | 07 | 10 tests; all 3 real agents; terminal state ranges per fixture |
 | 48 | Integration conftest | `tests/integration/conftest.py` | 07 | Shared .env loader for all integration/LLM tests |
 | 49 | BU registry expansion | `config/bu_registry.yaml` + `config/bu_profiles.yaml` | 07.7 | bu_alpha owned_product_areas expanded to match SignalScribe's observed vocabulary |
+| 50 | Ingest errors | `src/pulsecraft/skills/ingest/errors.py` | 08 | IngestNotFound, IngestUnauthorized, IngestMalformed |
+| 51 | Redaction helper | `src/pulsecraft/skills/ingest/redaction.py` | 08 | Belt-and-suspenders regex scrub for PII/credentials at ingest time |
+| 52 | Normalizer | `src/pulsecraft/skills/ingest/normalizer.py` | 08 | normalize_to_change_artifact: shared normalization + validation + redaction |
+| 53 | Fetch adapters (×5) | `src/pulsecraft/skills/ingest/fetch_*.py` | 08 | fetch_release_note, fetch_work_item (Jira/ADO), fetch_doc, fetch_feature_flag, fetch_incident |
+| 54 | Stub source fixtures | `fixtures/sources/` (8 files) | 08 | Dev-mode stubs for all 5 source types |
+| 55 | CLI command group | `src/pulsecraft/cli/main.py` | 08 | Restructured to `pulsecraft run-change` + `pulsecraft ingest` command group |
+| 56 | Ingest unit tests | `tests/unit/skills/ingest/` (6 files) | 08 | ~110 unit tests: redaction, normalizer, each adapter |
+| 57 | Ingest integration tests | `tests/integration/skills/test_ingest_cli.py` | 08 | 8 subprocess-based CLI integration tests |
 
 ---
 
@@ -156,7 +164,7 @@ All implementation happens via prompts in `/prompts/`, run one at a time in Clau
 | 06 | `prompts/06-agent-buatlas.md` | BUAtlas prompt | ✅ Done |
 | 07 | `prompts/07-agent-pushpilot.md` | PushPilot prompt | ✅ Done |
 | 07.7 | `prompts/07.7-demo-reliability-fix.md` | BU pre-filter vocabulary expansion — fixture 001 determinism | ✅ Done |
-| 08 | `prompts/08-skills-ingest.md` | Ingest adapter skills | ⏳ |
+| 08 | `prompts/08-skills-ingest.md` | Ingest adapter skills | ✅ Done |
 | 09 | `prompts/09-skills-registry-policy.md` | Registry, policy, audit skills | ⏳ |
 | 10 | `prompts/10-skills-delivery.md` | Delivery rendering skills | ⏳ |
 | 11 | `prompts/11-commands.md` | Operator slash commands | ⏳ |

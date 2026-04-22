@@ -31,9 +31,9 @@
 - ✅ 06 — BUAtlas agent (gates 4, 5) — parallel per-BU personalization, asyncio fan-out, FanoutFailure isolation
 - ✅ 07 — PushPilot agent (gate 6) — delivery timing, agent-vs-code split, policy enforcement layer
 - ✅ 07.7 — Demo reliability fix: BU pre-filter vocabulary expansion for fixture 001 determinism
+- ✅ 08 — Skills: ingest adapters (5 adapters + normalizer + redaction + CLI restructure, 390 tests)
 
 **Prompts remaining:**
-- ⏳ 08 — Skills: ingest adapters
 - ⏳ 09 — Skills: registry, policy, audit
 - ⏳ 10 — Skills: delivery rendering
 - ⏳ 11 — Operator slash commands
@@ -111,9 +111,20 @@ If a prompt authors **commands**, list them in the Commands section of this file
 
 ## Skills authored so far
 
-<!-- Populated as prompts 08–10 land. Each entry: name, purpose, location, producer prompt. -->
+### Ingest skills (prompt 08)
+Location: `src/pulsecraft/skills/ingest/`
 
-*(none yet — populated starting prompt 08)*
+| Skill | Purpose |
+|---|---|
+| `fetch_release_note` | Fetch + normalize release note → ChangeArtifact |
+| `fetch_work_item` | Fetch + normalize Jira/ADO work item → ChangeArtifact |
+| `fetch_doc` | Fetch + normalize document → ChangeArtifact |
+| `fetch_feature_flag` | Fetch + normalize feature flag → ChangeArtifact |
+| `fetch_incident` | Fetch + normalize incident → ChangeArtifact |
+| `normalize_to_change_artifact` | Shared normalization + validation layer |
+| `redact` | Regex-based PII/credential scrub (belt-and-suspenders; full guardrail in prompt 12) |
+
+Each adapter accepts an optional `transport: Callable[[str], dict] | None` parameter. When `None`, reads from `fixtures/sources/<type>/<ref>.json` (dev mode). Errors: `IngestNotFound`, `IngestUnauthorized`, `IngestMalformed`.
 
 ## Commands authored so far
 
@@ -253,5 +264,5 @@ Uses default mock agents. Prints Rich tables: state-transition audit chain, BU r
 
 ---
 
-*Last updated: prompt 07.7 (demo reliability fix — expanded bu_alpha owned_product_areas to align with SignalScribe's observed impact_areas vocabulary; fixture 001 now deterministically reaches AWAITING_HITL).*
-*Next prompt: 08 — Skills: ingest adapters.*
+*Last updated: prompt 08 (ingest skills — 5 adapters, normalizer, redaction, CLI restructure to command group; 390 tests passing).*
+*Next prompt: 09 — Skills: registry, policy, audit.*
