@@ -190,5 +190,3 @@ Read `CLAUDE.md` at the repo root. It has the current-phase tracker updated on e
 Plans are not sacred. If partway through prompt 07 you realize a phase should have gone differently, we re-plan. This doc will be wrong in some places by prompt 14 and that's expected.
 
 ---
-
-*This document written at prompt 03.5, when the user asked for a panoramic view of the remaining work. Not a commitment to run every prompt exactly as described — it's the honest current best plan, subject to learning.*

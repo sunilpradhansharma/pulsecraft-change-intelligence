@@ -2,11 +2,11 @@
 
 > **PulseCraft — from release notes to BU-ready actions, via a team of AI agents.**
 
-PulseCraft is an AbbVie-internal AI service that monitors marketplace product and feature changes, reasons about their business impact, and delivers personalized, actionable notifications to Business Unit heads — without requiring them to read vendor release notes. It is implemented as a team of three specialist AI agents (SignalScribe, BUAtlas, PushPilot) orchestrated by a deterministic Python service built on the Claude Agent SDK.
+PulseCraft is an internal AI service that monitors marketplace product and feature changes, reasons about their business impact, and delivers personalized, actionable notifications to Business Unit heads — without requiring them to read vendor release notes. It is implemented as a team of three specialist AI agents (SignalScribe, BUAtlas, PushPilot) orchestrated by a deterministic Python service built on the Claude Agent SDK.
 
 The service turns unstructured change artifacts (release notes, changelogs, announcements) into structured signals, maps each signal to the BUs most likely to care, drafts concise BU-tailored messages, and routes them through a human-in-the-loop approval gate before delivery.
 
-**Status:** Planning phase complete. Implementation in progress — schemas, config, fixtures, and deterministic orchestrator committed (prompt 04). Agent prompt authoring begins in prompt 05.
+**Status:** Planning phase complete. Implementation in progress — orchestrator complete (prompt 04), SignalScribe agent live (prompt 05). BUAtlas authoring next in prompt 06.
 
 > **For Claude Code sessions:** read [`CLAUDE.md`](CLAUDE.md) for standing instructions before taking any action in this repo.
 

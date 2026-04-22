@@ -38,11 +38,26 @@ def run_change(
         "--queue-dir",
         help="Directory for HITL queue files.",
     ),
+    real_signalscribe: bool = typer.Option(  # noqa: B008
+        False,
+        "--real-signalscribe",
+        help="Use real SignalScribe (LLM) instead of mock. Requires ANTHROPIC_API_KEY.",
+    ),
+    real_buatlas: bool = typer.Option(  # noqa: B008
+        False,
+        "--real-buatlas",
+        help="Use real BUAtlas (LLM) instead of mock. (Placeholder — implemented in prompt 06.)",
+    ),
+    real_pushpilot: bool = typer.Option(  # noqa: B008
+        False,
+        "--real-pushpilot",
+        help="Use real PushPilot (LLM) instead of mock. (Placeholder — implemented in prompt 07.)",
+    ),
 ) -> None:
-    """Drive a ChangeArtifact through the pipeline with mock agents.
+    """Drive a ChangeArtifact through the pipeline.
 
-    Prints each state transition and the final terminal state.
-    Uses mock agents that return scripted defaults — no LLM calls.
+    By default, uses mock agents (no LLM calls). Pass --real-signalscribe to
+    use the real LLM-backed SignalScribe for gates 1, 2, 3.
     """
     import json
 
@@ -70,11 +85,29 @@ def run_change(
         )
     )
 
+    # Build agents
+    if real_signalscribe:
+        from pulsecraft.agents.signalscribe import SignalScribe
+
+        signalscribe_agent = SignalScribe()
+        console.print("[cyan]SignalScribe:[/cyan] real (claude-sonnet-4-6)")
+    else:
+        signalscribe_agent = MockSignalScribe()
+
+    if real_buatlas:
+        err_console.print(
+            "[yellow]--real-buatlas not yet implemented (prompt 06). Using mock.[/yellow]"
+        )
+    if real_pushpilot:
+        err_console.print(
+            "[yellow]--real-pushpilot not yet implemented (prompt 07). Using mock.[/yellow]"
+        )
+
     # Wire up infrastructure
     audit_writer = AuditWriter(root=audit_dir)
     hitl_queue = HITLQueue(audit_writer=audit_writer, root=queue_dir)
     orchestrator = Orchestrator(
-        signalscribe=MockSignalScribe(),
+        signalscribe=signalscribe_agent,
         buatlas=MockBUAtlas(),
         pushpilot=MockPushPilot(),
         audit_writer=audit_writer,

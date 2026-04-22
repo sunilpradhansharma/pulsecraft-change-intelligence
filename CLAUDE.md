@@ -27,9 +27,9 @@
 - ✅ 03.5 — Session continuity setup (CLAUDE.md, design docs, planning index)
 - ✅ 03.6 — Repo hygiene (track untracked files, revert hello.py, sync CLAUDE.md + planning index)
 - ✅ 04 — Deterministic orchestrator: state machine, agent Protocols, mock agents, audit writer, HITL queue, engine, CLI, 187 tests
+- ✅ 05 — SignalScribe agent (gates 1, 2, 3) — real LLM-backed, Claude Sonnet 4.6
 
 **Prompts remaining:**
-- ⏳ 05 — Agent: SignalScribe (gates 1, 2, 3)
 - ⏳ 06 — Agent: BUAtlas (gates 4, 5, parallel per-BU)
 - ⏳ 07 — Agent: PushPilot (gate 6)
 - ⏳ 08 — Skills: ingest adapters
@@ -122,9 +122,14 @@ If a prompt authors **commands**, list them in the Commands section of this file
 
 ## Agents authored so far
 
-<!-- Populated as prompts 05–07 land. -->
-
-*(none yet — populated starting prompt 05)*
+### SignalScribe (prompt 05)
+- **Location:** `src/pulsecraft/agents/signalscribe.py`
+- **Prompt:** `.claude/agents/signalscribe.md`
+- **Owns gates:** 1, 2, 3
+- **Protocol:** `SignalScribeProtocol` (see `orchestrator/agent_protocol.py`)
+- **Model:** `claude-sonnet-4-6` via Anthropic API
+- **Tools:** none yet (gate-3 clarification tools come in a future prompt)
+- **Eval script:** `scripts/eval_signalscribe.py`
 
 ## Hooks configured so far
 
@@ -228,5 +233,5 @@ Uses default mock agents. Prints Rich tables: state-transition audit chain, BU r
 
 ---
 
-*Last updated: prompt 04 (deterministic orchestrator — state machine, agent Protocols, mock agents, audit writer, HITL queue, engine, CLI, 187 tests).*
-*Next prompt: 05 — SignalScribe agent (gates 1, 2, 3).*
+*Last updated: prompt 05 (SignalScribe — first real LLM-backed agent, gates 1/2/3, eval script, CLI --real-signalscribe flag).*
+*Next prompt: 06 — BUAtlas agent (gates 4, 5, parallel per-BU).*

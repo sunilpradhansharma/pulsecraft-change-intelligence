@@ -73,6 +73,9 @@ files = ["src"]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 addopts = "-ra -q"
+markers = [
+  "llm: tests requiring real LLM API calls (skipped by default; set PULSECRAFT_RUN_LLM_TESTS=1 to run)",
+]
 
 [tool.coverage.run]
 source = ["src/pulsecraft"]

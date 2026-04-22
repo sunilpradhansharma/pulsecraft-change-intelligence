@@ -1,7 +1,7 @@
 # PulseCraft — Problem Statement (v1)
 
 > **Status:** Draft for sponsor review
-> **Owner:** Oṁ — AI / Architecture
+> **Owner:** 
 > **Sponsor:** Head of AI
 > **Phase:** Phase 0 output → input to Phase 1
 > **Revision:** v1 (post Phase-0 discovery)
@@ -23,7 +23,7 @@ The initiative is sponsored by the **Head of AI** as a capability-building progr
 
 ### 2.1 The observed problem
 
-BU leaders at AbbVie `[A]` currently learn about marketplace product/feature changes **too late, inconsistently, and with poor signal-to-noise.** Some receive a firehose of release notes irrelevant to their BU; others miss changes that materially affect their team's workflows or customer experience. Downstream BU teams react instead of prepare, creating avoidable churn during rollouts.
+BU leaders `[A]` currently learn about marketplace product/feature changes **too late, inconsistently, and with poor signal-to-noise.** Some receive a firehose of release notes irrelevant to their BU; others miss changes that materially affect their team's workflows or customer experience. Downstream BU teams react instead of prepare, creating avoidable churn during rollouts.
 
 ### 2.2 Why now
 
@@ -192,4 +192,4 @@ Before v1 go-live, the following must be resolved:
 
 | Version | Author | Summary |
 |---|---|---|
-| v1 | Oṁ | First full Problem Statement with AbbVie context, assumption tags, risk register |
+| v1 |  | First full Problem Statement with AbbVie context, assumption tags, risk register |

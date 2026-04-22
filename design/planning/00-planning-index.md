@@ -2,7 +2,6 @@
 
 > **Purpose.** Single place to check *what has been decided, what is in flight, what is next, and where each artifact lives.*
 >
-> **Owner:** Oṁ
 
 ---
 
@@ -10,9 +9,9 @@
 
 **Phase:** Active implementation — schemas and config complete, agent authoring next.
 
-**Last completed:** Prompt 04 (deterministic orchestrator — state machine, agent Protocols, mock agents, audit writer, HITL queue, engine, CLI command, 187 tests).
+**Last completed:** Prompt 05 (SignalScribe — first real LLM-backed agent; gates 1, 2, 3; Claude Sonnet 4.6; eval script; CLI --real-signalscribe flag).
 
-Planning phases P0–P2 are complete. The prompt-driven build sequence is at prompt 04 of 14. Schemas (02), config/fixtures (03), session-continuity (03.5), repo hygiene (03.6), and the full orchestrator (04) are done. Prompt 05 (SignalScribe agent) is next.
+Planning phases P0–P2 are complete. The prompt-driven build sequence is at prompt 05 of 14. Prompt 06 (BUAtlas agent) is next.
 
 ---
 
@@ -65,6 +64,11 @@ Planning phases P0–P2 are complete. The prompt-driven build sequence is at pro
 | 26 | CLI command | `src/pulsecraft/cli/main.py` | 04 | `pulsecraft <fixture>` — mock pipeline, Rich output |
 | 27 | New schemas (prompt 04) | `src/pulsecraft/schemas/past_engagement.py`, `push_pilot_output.py` | 04 | PastEngagement (BUAtlas context), PushPilotOutput (gate-6 agent return) |
 | 28 | Orchestrator tests | `tests/unit/orchestrator/`, `tests/integration/orchestrator/` | 04 | 187 total tests; 8 fixture paths, idempotency, audit chain reconstruction |
+| 29 | SignalScribe agent | `src/pulsecraft/agents/signalscribe.py` | 05 | Real LLM-backed agent; gates 1/2/3; Protocol-compliant; retry logic |
+| 30 | SignalScribe system prompt | `.claude/agents/signalscribe.md` | 05 | 307-line canonical prompt derived from decision criteria |
+| 31 | SignalScribe eval script | `scripts/eval_signalscribe.py` | 05 | Runs all 8 fixtures, reports decision chain match status |
+| 32 | SignalScribe unit tests | `tests/unit/agents/test_signalscribe_unit.py` | 05 | Mocked-client tests; contract, retry, error handling |
+| 33 | SignalScribe integration tests | `tests/integration/agents/test_signalscribe_integration.py` | 05 | Real-API tests; @pytest.mark.llm; skipped by default |
 
 ---
 
@@ -132,7 +136,7 @@ All implementation happens via prompts in `/prompts/`, run one at a time in Clau
 | 03.5 | `prompts/03.5-session-continuity.md` | CLAUDE.md, design docs, planning index update | ✅ Done |
 | 03.6 | *(inline)* | Repo hygiene — track untracked files, revert hello.py, sync CLAUDE.md + planning index | ✅ Done |
 | 04 | `prompts/04-orchestrator.md` | Deterministic orchestrator + CLI + 187 tests | ✅ Done |
-| 05 | `prompts/05-agent-signalscribe.md` | SignalScribe prompt | ⏳ |
+| 05 | `prompts/05-agent-signalscribe.md` | SignalScribe agent — gates 1, 2, 3; real LLM | ✅ Done |
 | 06 | `prompts/06-agent-buatlas.md` | BUAtlas prompt | ⏳ |
 | 07 | `prompts/07-agent-pushpilot.md` | PushPilot prompt | ⏳ |
 | 08 | `prompts/08-skills-ingest.md` | Ingest adapter skills | ⏳ |
