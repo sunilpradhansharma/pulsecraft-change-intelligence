@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "change_id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+  "source_type": "release_note",
+  "source_ref": "RN-2026-114",
+  "ingested_at": "2026-04-22T13:45:00Z",
+  "title": "Prior Authorization Submission Form — Redesigned Validation UI (HCP Portal)",
+  "raw_text": "## Release Summary\n\nThe prior authorization submission form in the HCP portal has been updated with a redesigned validation interface. This release affects all HCP portal users in the specialty pharmacy ordering workflow.\n\n## What Changed\n\nThe previous submission form used a single-page layout with inline error messages that appeared only after the final submission attempt. The new form introduces a multi-step wizard layout with real-time field validation. Error feedback is now surfaced per-step before the user attempts final submission.\n\nSpecific changes:\n- Step 1: Patient eligibility verification now pre-populates from the formulary lookup service (read-only display, no data entry required for existing patients).\n- Step 2: Clinical justification field now enforces a 200-character minimum and displays a live character counter.\n- Step 3: Prescriber attestation section has been reorganized to group signature fields together.\n- Confirmation screen: Added a printable summary view accessible immediately after successful submission.\n\n## Rollout Plan\n\nRollout begins 2026-05-05 and is staggered by region:\n- Week 1 (2026-05-05 to 2026-05-11): West region HCP portal users\n- Week 2 (2026-05-12 to 2026-05-18): East and Central region HCP portal users\n- Week 3 (2026-05-19): National rollout complete\n\nNo action is required from HCP users. The new form replaces the existing form automatically.\n\n## Support Readiness\n\nThe support team has prepared an FAQ document and updated the portal help center. A brief training video (3 minutes) has been added to the portal's Getting Started section. Support ticket routing has been updated to route PA form questions to the dedicated specialty pharmacy support queue.\n\n## Rollback Plan\n\nA feature flag controls the new UI. If critical issues are detected during Week 1, the release can be rolled back within 2 hours without data loss.",
+  "author": {
+    "name": "<product-manager-alpha-portal>",
+    "role": "Product Manager, HCP Portal"
+  },
+  "related_refs": [
+    {
+      "type": "jira_work_item",
+      "ref": "JIRA-ALPHA-2891",
+      "relation": "references"
+    }
+  ],
+  "labels": [
+    "hcp-facing",
+    "ui-change",
+    "specialty-pharmacy",
+    "prior-authorization",
+    "customer-impacting"
+  ],
+  "rollout_hints": {
+    "start_date": "2026-05-05",
+    "ramp": "Staggered by region: West week 1, East+Central week 2, national week 3",
+    "target_population": "All HCP portal users on specialty pharmacy prior authorization workflows"
+  }
+}

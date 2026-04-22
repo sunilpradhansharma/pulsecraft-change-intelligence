@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "change_id": "18b9c0d1-e2f3-4a4b-5c6d-7e8f9a0b1c2d",
+  "source_type": "jira_work_item",
+  "source_ref": "JIRA-EPSILON-4417",
+  "ingested_at": "2026-04-22T07:30:00Z",
+  "title": "[DONE] Notification wording standardization — system messages updated to use approved phrasing",
+  "raw_text": "## Status: DONE (shipped 2026-04-07)\n\n## Summary\n\nThis ticket tracked the standardization of outbound notification wording for system-generated messages in the field force portal. The change shipped on 2026-04-07 as part of a broader notification standardization program. No pre-release communication was sent.\n\n## What Changed\n\nSystem-generated messages across the field force portal notification surface were updated to use the approved standard phrasing templates. Specific changes include:\n\n- Order status notifications: The phrase \"Your order has been received\" was replaced with \"Order received — confirmation number [ID].\"\n- Submission acknowledgment messages: The generic \"Submitted successfully\" was replaced with \"Submission confirmed — [reference number] logged at [timestamp].\"\n- Failure messages: \"Something went wrong\" was replaced with the specific failure reason code plus a standard support escalation prompt.\n- Session timeout warning: Updated to display remaining session time in minutes, replacing the previous static \"Your session will expire soon\" message.\n\nThe underlying notification logic, triggers, and delivery channels are unchanged. Only the displayed text was modified.\n\n## Post-Ship Observations\n\nSince shipping on 2026-04-07, the support queue has received several tickets from field force users expressing confusion about the changed wording. Common questions include: \"why does the order confirmation look different?\", \"is this the same system?\", and \"did something change with notifications?\" Three tickets have been escalated as potential defects before being resolved as working-as-intended.\n\n## Communication Gap\n\nNo advance communication was sent to affected BUs before this change shipped. The notification standardization program was classified as a low-risk cosmetic update during planning; the communication step was inadvertently omitted from the release checklist.\n\nThis ticket is being ingested into PulseCraft post-hoc to generate a retrospective awareness notification.",
+  "author": {
+    "name": "<engineering-lead-epsilon-notifications>",
+    "role": "Engineering Lead, Notification Services"
+  },
+  "related_refs": [
+    {
+      "type": "jira_work_item",
+      "ref": "JIRA-EPSILON-4200",
+      "relation": "parent"
+    }
+  ],
+  "labels": [
+    "notification-services",
+    "field-force",
+    "wording-change",
+    "post-hoc",
+    "communication-gap"
+  ],
+  "rollout_hints": {
+    "start_date": "2026-04-07",
+    "ramp": "Already shipped — retroactive awareness notification only",
+    "target_population": "Field force portal users in the Epsilon BU notification services workflow"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "change_id": "f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c",
+  "source_type": "release_note",
+  "source_ref": "RN-2026-111",
+  "ingested_at": "2026-04-22T10:15:00Z",
+  "title": "Analytics Portal — New Filtering and Export Capabilities for Reporting Dashboard",
+  "raw_text": "## Release Summary\n\nThe reporting dashboard within the analytics portal has been updated with new filtering capabilities and an enhanced data export workflow. This release is owned and operated by the data and analytics team.\n\n## What Changed\n\n### New Filtering Capabilities\n\nThe dashboard now supports multi-dimensional filtering across all standard report types:\n- Date range filters now support rolling windows (last 7 days, last 30 days, last quarter) in addition to fixed date ranges.\n- A new cross-report filter panel allows users to apply a single filter selection (e.g., region, product area) across multiple open report tabs simultaneously.\n- Filter state is now persisted per user session and can be saved as named filter presets.\n\n### Enhanced Export Workflow\n\nData export has been upgraded:\n- Export now supports CSV, Excel, and a new structured JSON format.\n- Large exports (> 50,000 rows) are now processed asynchronously. Users receive a notification when the export is ready for download.\n- Export history is retained for 30 days, accessible from the new Export Activity log.\n\n## Affected Report Types\n\nAll standard report types available in the reporting dashboard are affected by the new filtering UI. This includes operational reports, performance dashboards, and ad-hoc query outputs.\n\nNote: The clinical trial enrollment summary report — a specialized report type accessed by clinical operations teams for a specific data reconciliation workflow — also uses the same reporting dashboard infrastructure. Users of that specific report will see the same updated UI, though the use case for that report is distinct from the primary analytics use case.\n\n## Rollout\n\nRollout begins 2026-05-01. All users of the analytics portal will see the new interface simultaneously — no phased rollout for this release.\n\n## Support\n\nUpdated documentation and in-app tooltips are available from the dashboard help menu. A 10-minute walkthrough video has been posted to the internal learning portal.",
+  "author": {
+    "name": "<engineering-lead-analytics>",
+    "role": "Engineering Lead, Analytics Portal"
+  },
+  "related_refs": [
+    {
+      "type": "jira_work_item",
+      "ref": "JIRA-ZETA-5501",
+      "relation": "references"
+    }
+  ],
+  "labels": [
+    "analytics",
+    "reporting",
+    "dashboard",
+    "data-export",
+    "customer-impacting"
+  ],
+  "rollout_hints": {
+    "start_date": "2026-05-01",
+    "ramp": "Simultaneous rollout to all analytics portal users — no phased ramp",
+    "target_population": "All analytics portal users; incidentally includes clinical operations teams using the enrollment summary report"
+  }
+}

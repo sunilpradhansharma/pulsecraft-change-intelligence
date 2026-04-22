@@ -1,0 +1,208 @@
+# BU Profiles — configuration for BUAtlas personalization.
+# Contains display names only (no PII). Heads and delegates are placeholder
+# synthetic names. Real names loaded via Track A onboarding (items Q2, Q7).
+# Owner: TBD — Track A discovery item Q2
+# Last updated: 2026-04-22
+schema_version: "1.0"
+
+profiles:
+  - bu_id: bu_alpha
+    name: "Alpha BU"
+    therapeutic_area: immunology
+    head:
+      name: "<head-alpha>"
+      role: "Head of Alpha BU"
+      delegate_ids:
+        - "<delegate-alpha-1>"
+    owned_product_areas:
+      - specialty_pharmacy
+      - hcp_portal_ordering
+      - prior_authorization
+    preferences:
+      channels:
+        - teams
+        - email
+      quiet_hours:
+        timezone: "America/Chicago"
+        start: "18:00"
+        end: "08:00"
+      digest_opt_in: true
+      max_notifications_per_week: 10
+    active_initiatives:
+      - "Q2 specialty pharmacy network expansion — accelerating regional coverage"
+      - "Prior authorization turnaround time reduction program"
+      - "HCP portal self-service onboarding initiative"
+    escalation_contact:
+      name: "<escalation-alpha>"
+      role: "Director of Operations, Alpha BU"
+    okrs_current_quarter:
+      - "Reduce PA processing time by 20% by end of Q2"
+      - "Achieve 95% HCP portal uptime SLA"
+
+  - bu_id: bu_beta
+    name: "Beta BU"
+    therapeutic_area: oncology
+    head:
+      name: "<head-beta>"
+      role: "Head of Beta BU"
+      delegate_ids:
+        - "<delegate-beta-1>"
+        - "<delegate-beta-2>"
+    owned_product_areas:
+      - patient_support_services
+      - co_pay_programs
+      - patient_portal
+    preferences:
+      channels:
+        - email
+      quiet_hours:
+        timezone: "America/New_York"
+        start: "19:00"
+        end: "07:00"
+      digest_opt_in: false
+      max_notifications_per_week: 5
+    active_initiatives:
+      - "Co-pay program enrollment simplification — reduce friction at pharmacy"
+      - "Patient portal mobile experience upgrade"
+    escalation_contact:
+      name: "<escalation-beta>"
+      role: "Senior Director, Patient Access, Beta BU"
+    okrs_current_quarter:
+      - "Enroll 15% more eligible patients in co-pay assistance by Q2 close"
+      - "Cut patient portal support tickets by 30%"
+
+  - bu_id: bu_gamma
+    name: "Gamma BU"
+    therapeutic_area: neuroscience
+    head:
+      name: "<head-gamma>"
+      role: "Head of Gamma BU"
+      delegate_ids:
+        - "<delegate-gamma-1>"
+    owned_product_areas:
+      - medical_information_portal
+      - clinical_evidence_library
+      - field_medical_tools
+    preferences:
+      channels:
+        - teams
+        - email
+      quiet_hours:
+        timezone: "America/Los_Angeles"
+        start: "20:00"
+        end: "08:00"
+      digest_opt_in: true
+      max_notifications_per_week: 8
+    active_initiatives:
+      - "Evidence library refresh — align content with updated guidelines"
+      - "MSL digital enablement: new field medical tools rollout"
+      - "Medical information portal response-time improvement initiative"
+    escalation_contact:
+      name: "<escalation-gamma>"
+      role: "Associate Medical Director, Gamma BU"
+    okrs_current_quarter:
+      - "Reduce medical information response time to < 48 hours"
+      - "Complete evidence library content audit by end of Q2"
+
+  - bu_id: bu_delta
+    name: "Delta BU"
+    therapeutic_area: hematology
+    head:
+      name: "<head-delta>"
+      role: "Head of Delta BU"
+      delegate_ids:
+        - "<delegate-delta-1>"
+    owned_product_areas:
+      - clinical_trial_operations
+      - site_management_portal
+      - lab_results_integration
+      - reporting
+    preferences:
+      channels:
+        - teams
+        - email
+      quiet_hours:
+        timezone: "America/New_York"
+        start: "18:30"
+        end: "07:30"
+      digest_opt_in: true
+      max_notifications_per_week: 15
+    active_initiatives:
+      - "Site management portal v2 launch — improved site coordinator workflows"
+      - "Lab results integration with regional laboratory networks"
+      - "Clinical operations reporting dashboard consolidation"
+    escalation_contact:
+      name: "<escalation-delta>"
+      role: "VP Clinical Operations, Delta BU"
+    okrs_current_quarter:
+      - "Reduce site activation time by 15% via portal improvements"
+      - "Achieve 100% lab results integration coverage for active trials"
+
+  - bu_id: bu_epsilon
+    name: "Epsilon BU"
+    therapeutic_area: immunology
+    head:
+      name: "<head-epsilon>"
+      role: "Head of Epsilon BU"
+      delegate_ids:
+        - "<delegate-epsilon-1>"
+        - "<delegate-epsilon-2>"
+    owned_product_areas:
+      - crm_integration
+      - field_force_portal
+      - sample_management
+      - notification_services
+    preferences:
+      channels:
+        - teams
+        - email
+      quiet_hours:
+        timezone: "America/Chicago"
+        start: "19:00"
+        end: "07:00"
+      digest_opt_in: false
+      max_notifications_per_week: 10
+    active_initiatives:
+      - "Field force portal performance improvement — mobile responsiveness"
+      - "Sample management system integration with inventory platform"
+      - "Notification standardization program — consistent messaging across channels"
+    escalation_contact:
+      name: "<escalation-epsilon>"
+      role: "Director of Commercial Operations, Epsilon BU"
+    okrs_current_quarter:
+      - "Achieve < 2-second field force portal load time on mobile"
+      - "Standardize notification templates across all outbound channels"
+
+  - bu_id: bu_zeta
+    name: "Zeta BU"
+    therapeutic_area: null
+    head:
+      name: "<head-zeta>"
+      role: "Head of Zeta BU"
+      delegate_ids:
+        - "<delegate-zeta-1>"
+    owned_product_areas:
+      - analytics_portal
+      - reporting_dashboard
+      - data_pipelines
+      - operational_reporting
+    preferences:
+      channels:
+        - teams
+        - email
+      quiet_hours:
+        timezone: "Europe/London"
+        start: "20:00"
+        end: "08:00"
+      digest_opt_in: true
+      max_notifications_per_week: 15
+    active_initiatives:
+      - "Analytics portal v3 — self-service dashboard builder for BU stakeholders"
+      - "Reporting pipeline reliability improvements — reduce data latency"
+      - "Operational reporting standardization across all BUs"
+    escalation_contact:
+      name: "<escalation-zeta>"
+      role: "Head of Data & Analytics Engineering, Zeta BU"
+    okrs_current_quarter:
+      - "Reduce reporting data latency from 4 hours to < 1 hour"
+      - "Onboard 3 additional BUs onto self-service analytics portal"

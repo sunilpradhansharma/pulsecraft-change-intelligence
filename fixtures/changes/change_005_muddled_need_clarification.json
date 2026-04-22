@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "change_id": "e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b",
+  "source_type": "ado_work_item",
+  "source_ref": "ADO-PLATFORM-8812",
+  "ingested_at": "2026-04-21T14:20:00Z",
+  "title": "Order Submission — Q3 Processing Improvements",
+  "raw_text": "## Overview\n\nThis work item covers the order submission improvements scheduled for Q3. The changes should improve things for users who submit orders through the relevant interfaces.\n\n## Changes\n\nOrder submission processing has been updated to handle certain scenarios more robustly. The main change involves how submissions are validated before being passed downstream. Previously, some edge cases could result in submissions entering a pending state without a clear resolution path. The updated logic addresses this.\n\nAdditionally, some ordering workflow behavior has been adjusted based on feedback received over the past quarter. The adjustments are expected to reduce user friction in the submission flow.\n\n## Impact\n\nUsers submitting orders should notice improvements, particularly in scenarios where prior behavior was inconsistent. The changes apply to order submissions going through the standard processing pathway.\n\n## Timeline\n\nScheduled for Q3. Specific rollout date to be confirmed closer to the time. The exact scope of which order types and regions are in the initial rollout is still being finalized.\n\n## Notes\n\nSome of the implementation details are still being worked out. The team will follow up with more specific guidance once the design is locked.",
+  "author": {
+    "name": "<product-owner-platform>",
+    "role": "Product Owner, Platform"
+  },
+  "related_refs": [],
+  "labels": [
+    "order-submission",
+    "platform",
+    "q3-roadmap"
+  ],
+  "rollout_hints": {
+    "start_date": null,
+    "ramp": "Q3 — specific date TBD",
+    "target_population": "Users submitting orders via the standard processing pathway (scope TBD)"
+  }
+}

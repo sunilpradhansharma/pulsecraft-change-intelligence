@@ -1,0 +1,58 @@
+# Channel Policy — approved channels, priority-based routing, dedupe, digest.
+# Enforced in code (pre-delivery hook).
+# Owner: TBD — Track A discovery item Q5
+# Last updated: 2026-04-22
+schema_version: "1.0"
+
+approved_channels:
+  global:
+    # Channels approved for any BU unless overridden
+    - teams
+    - email
+  restricted:
+    # Channels approved only for specific BUs
+    push:
+      - bu_beta           # only Beta BU uses push in v1
+    portal_digest: []     # not approved in v1 for any BU
+    servicenow: []        # not approved in v1
+
+channel_selection_rules:
+  # Applied in order; first match wins
+  - when:
+      priority: P0
+    channel: teams
+    also_send_to:
+      - email             # dual-channel for P0 urgency
+  - when:
+      priority: P1
+    channel: teams
+  - when:
+      priority: P2
+      recipient_digest_opt_in: true
+    channel: email        # delivered as part of daily digest bundle
+  - when:
+      priority: P2
+      recipient_digest_opt_in: false
+    channel: email
+  - when:
+      priority: any
+      recipient_preference: email_only
+    channel: email
+
+channel_selection_default:
+  channel: email
+
+dedupe:
+  window_hours: 24
+  key_components:
+    - change_id
+    - bu_id
+    - recipient_id
+    - message_variant_id
+
+digest:
+  cadence: daily
+  send_time_recipient_local: "09:00"
+  max_items_per_digest: 8
+  priority_filter:
+    - P2              # digests are P2-only; P0/P1 are always immediate

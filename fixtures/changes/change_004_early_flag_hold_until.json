@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "change_id": "d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f80",
+  "source_type": "feature_flag",
+  "source_ref": "FF-GAMMA-LAB-0042",
+  "ingested_at": "2026-04-22T08:00:00Z",
+  "title": "Feature Flag Enabled: Lab Results Integration — New Structured View (2% Internal Rollout)",
+  "raw_text": "## Feature Flag Event\n\nFlag name: lab_results_structured_view_v2\nStatus: ENABLED\nEnvironment: production\nCurrent rollout: 2% (internal users only)\nVariant: treatment (new structured view)\n\n## Capability Description\n\nThe new lab results structured view replaces the legacy flat-text rendering with a structured, sortable table format. Each result set is organized by panel, with reference range highlighting and trend indicators for sequential values. Users on the field medical tools surface who access lab results data will see the new interface.\n\nThis is a genuinely new capability. The previous rendering was a read-only text dump from the upstream lab integration; the new view adds interactivity and contextual display logic.\n\n## Rollout Status\n\nAs of this flag event, 2% of internal users (staff accounts) have been assigned to the treatment variant. No external or partner-facing users are in scope at this stage.\n\nFull ramp schedule: TBD pending metrics review. The product team is monitoring session engagement, error rate, and user feedback before committing to a broader ramp. A ramp decision meeting is tentatively scheduled for a future sprint.\n\n## Affected Surfaces\n\nThe change is visible on the field medical tools portal, specifically in the patient case detail view where lab result panels are displayed. No changes to the data API; only the rendering layer is affected.\n\n## Rollback\n\nFlag can be toggled off at any time with immediate effect. No data migration involved.",
+  "author": {
+    "name": "<product-manager-gamma-field-tools>",
+    "role": "Product Manager, Field Medical Tools"
+  },
+  "related_refs": [
+    {
+      "type": "jira_work_item",
+      "ref": "JIRA-GAMMA-3301",
+      "relation": "references"
+    }
+  ],
+  "labels": [
+    "feature-flag",
+    "internal-rollout",
+    "field-medical",
+    "lab-results",
+    "experiment"
+  ],
+  "rollout_hints": {
+    "start_date": null,
+    "ramp": "2% internal only; full ramp schedule TBD pending metrics review",
+    "target_population": "Internal staff accounts on field medical tools portal"
+  }
+}

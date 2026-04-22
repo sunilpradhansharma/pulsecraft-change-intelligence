@@ -1,0 +1,100 @@
+# BU Registry — product-area → BU mapping for deterministic pre-filter.
+# Recall-biased: prefer over-matching; BUAtlas (gate 4) applies precision.
+# Owner: TBD — Track A discovery item Q7
+# Last updated: 2026-04-22
+schema_version: "1.0"
+
+bus:
+  - bu_id: bu_alpha
+    name: "Alpha BU"
+    therapeutic_area: immunology
+    owned_product_areas:
+      - specialty_pharmacy
+      - hcp_portal_ordering
+      - prior_authorization
+    keywords:
+      - specialty pharmacy
+      - specialty distribution
+      - hcp portal
+      - prior auth
+      - PA
+      - authorization
+
+  - bu_id: bu_beta
+    name: "Beta BU"
+    therapeutic_area: oncology
+    owned_product_areas:
+      - patient_support_services
+      - co_pay_programs
+      - patient_portal
+    keywords:
+      - patient support
+      - co-pay
+      - copay
+      - patient portal
+      - patient access
+      - hub services
+
+  - bu_id: bu_gamma
+    name: "Gamma BU"
+    therapeutic_area: neuroscience
+    owned_product_areas:
+      - medical_information_portal
+      - clinical_evidence_library
+      - field_medical_tools
+    keywords:
+      - medical information
+      - medical affairs
+      - clinical evidence
+      - field medical
+      - MSL tools
+      - evidence library
+
+  - bu_id: bu_delta
+    name: "Delta BU"
+    therapeutic_area: hematology
+    owned_product_areas:
+      - clinical_trial_operations
+      - site_management_portal
+      - lab_results_integration
+      - reporting
+    keywords:
+      - clinical trial
+      - site management
+      - lab results
+      - trial operations
+      - reporting
+      - site portal
+
+  - bu_id: bu_epsilon
+    name: "Epsilon BU"
+    therapeutic_area: immunology
+    owned_product_areas:
+      - crm_integration
+      - field_force_portal
+      - sample_management
+      - notification_services
+    keywords:
+      - field force
+      - sales portal
+      - CRM
+      - sample management
+      - rep portal
+      - notifications
+      - notification wording
+
+  - bu_id: bu_zeta
+    name: "Zeta BU"
+    therapeutic_area: null
+    owned_product_areas:
+      - analytics_portal
+      - reporting_dashboard
+      - data_pipelines
+      - operational_reporting
+    keywords:
+      - analytics
+      - reporting
+      - dashboard
+      - data pipeline
+      - operational reporting
+      - metrics portal

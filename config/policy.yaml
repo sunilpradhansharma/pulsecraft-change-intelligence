@@ -1,0 +1,80 @@
+# Policy Config — thresholds, restricted terms, rate limits, HITL triggers.
+# Enforced in code (hooks). Agents cannot reason around these values.
+# Owner: Head of AI (sponsor) + InfoSec (Track A item Q6)
+# Last updated: 2026-04-22
+schema_version: "1.0"
+
+confidence_thresholds:
+  signalscribe:
+    gate_1_communicate: 0.75   # below → ESCALATE
+    gate_1_archive: 0.60       # below → ESCALATE
+    gate_2_ripe: 0.70
+    gate_3_ready: 0.75
+  buatlas:
+    gate_4_affected: 0.60      # below → downgrade to ADJACENT
+    gate_4_any: 0.50           # below → ESCALATE
+    gate_5_worth_sending: 0.60
+  pushpilot:
+    gate_6_any: 0.60
+
+hitl_triggers:
+  - any_agent_escalate
+  - gate_3_need_clarification
+  - gate_3_unresolvable
+  - confidence_below_threshold
+  - priority_p0
+  - draft_contains_commitment_or_date
+  - restricted_term_detected
+  - mlr_sensitive_content_detected
+  - second_weak_from_gate_5
+  - dedupe_or_rate_limit_conflict_requiring_judgment
+
+restricted_terms:
+  commitments_and_dates:
+    # Phrases implying commitments; require HITL review
+    - "we will deliver"
+    - "guaranteed by"
+    - "commitment to ship"
+    - "promise that"
+    - "will be available by"
+    - "locked in for"
+  scientific_communication:
+    # Phrases that may constitute scientific communication; require MLR review
+    - "efficacy"
+    - "safety profile"
+    - "clinical outcomes"
+    - "indicated for"
+    - "contraindicated"
+    - "adverse event"
+    - "clinical data"
+    - "trial results"
+  sensitive_data_markers:
+    # Indicators that redaction failed upstream; hard-block delivery
+    - "patient name:"
+    - "DOB:"
+    - "MRN:"
+    - "SSN:"
+    - "API_KEY"
+    - "password="
+    - "secret_key"
+    - "access_token"
+
+rate_limits:
+  per_recipient:
+    max_per_day: 5
+    max_per_week: 15    # overridden by BU profile if BU profile sets lower
+  per_bu:
+    max_per_day: 20
+  global:
+    max_per_hour: 50
+
+quiet_hours_default:
+  # Used if BU profile does not specify
+  timezone: "America/Chicago"
+  start: "19:00"
+  end: "07:00"
+
+mlr_review_required_when:
+  - scientific_communication_term_present
+  - change_type_indicates_label_or_indication
+  - explicit_mlr_flag_in_source_artifact

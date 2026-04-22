@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "change_id": "07a8b9c0-d1e2-4f3a-4b5c-6d7e8f9a0b1c",
+  "source_type": "release_note",
+  "source_ref": "RN-2026-107",
+  "ingested_at": "2026-04-19T11:00:00Z",
+  "title": "HCP Educational Module Update — Revised Content Presentation for Safety and Efficacy Information",
+  "raw_text": "## Release Summary\n\nThe HCP-facing educational module within the medical information portal has been updated. This release revises how safety profile and efficacy information is presented to healthcare professionals accessing the educational content library.\n\n## What Changed\n\n### Safety Profile Section\n\nThe safety profile content display has been reorganized for improved readability. Key changes:\n- The safety profile summary section now appears as a structured table with categorized information grouped by system organ class.\n- Comparative safety profile data presentation has been updated to use standardized terminology aligned with current labeling.\n- A new contextual footnote system links safety profile statements to the full prescribing information.\n\n### Efficacy Data Presentation\n\nThe efficacy section has been updated to reflect current data presentation standards:\n- Primary efficacy endpoints are now displayed in a dedicated summary callout at the top of the section.\n- The efficacy data visualization component now renders interactive charts for time-to-event data.\n- Response rate data now includes confidence intervals displayed inline.\n\n## Intended Audience\n\nThis educational module is accessed by HCPs through the medical information portal. Content is reviewed and approved through the standard content governance process prior to publication.\n\n## Rollout\n\nContent is available immediately following publication. No phased rollout; update is live for all portal users.",
+  "author": {
+    "name": "<medical-content-lead>",
+    "role": "Medical Content Lead, Medical Affairs"
+  },
+  "related_refs": [
+    {
+      "type": "jira_work_item",
+      "ref": "JIRA-GAMMA-3088",
+      "relation": "references"
+    }
+  ],
+  "labels": [
+    "medical-affairs",
+    "hcp-facing",
+    "educational-content",
+    "content-update"
+  ],
+  "rollout_hints": {
+    "start_date": "2026-04-19",
+    "ramp": "Immediate — live for all medical information portal users",
+    "target_population": "Healthcare professionals accessing the medical information portal educational module"
+  }
+}

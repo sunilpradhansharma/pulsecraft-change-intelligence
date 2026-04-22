@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "change_id": "c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f",
+  "source_type": "release_note",
+  "source_ref": "RN-2026-109",
+  "ingested_at": "2026-04-20T16:30:00Z",
+  "title": "Portal Release — Sprint 47 Improvements",
+  "raw_text": "## Sprint 47 Release\n\nThis release includes various improvements across the portal experience. Users should notice improved performance and smoother interactions throughout.\n\n## What's New\n\nWe've made a number of enhancements this sprint based on feedback from the team and ongoing monitoring. Performance has been improved in several key areas. The interface is now more responsive, particularly under load.\n\nAdditionally, we've addressed some edge cases that were causing occasional issues for certain users. These fixes should result in a more consistent experience.\n\n## Additional Updates\n\nSeveral backend improvements have also been included in this release. These changes are transparent to end users and support ongoing platform stability goals.\n\nWe continue to invest in the foundation of the portal to ensure it meets the evolving needs of our stakeholders.",
+  "author": {
+    "name": "<release-coordinator>",
+    "role": "Release Coordinator"
+  },
+  "related_refs": [],
+  "labels": [
+    "portal",
+    "release",
+    "sprint-47"
+  ],
+  "rollout_hints": null
+}
