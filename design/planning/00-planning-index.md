@@ -9,9 +9,9 @@
 
 **Phase:** Active implementation — schemas and config complete, agent authoring next.
 
-**Last completed:** Prompt 05 (SignalScribe — first real LLM-backed agent; gates 1, 2, 3; Claude Sonnet 4.6; eval script; CLI --real-signalscribe flag).
+**Last completed:** Prompt 06 (BUAtlas — second real LLM-backed agent; gates 4, 5; asyncio fan-out; FanoutFailure isolation; eval script; CLI --real-buatlas flag).
 
-Planning phases P0–P2 are complete. The prompt-driven build sequence is at prompt 05 of 14. Prompt 06 (BUAtlas agent) is next.
+Planning phases P0–P2 are complete. The prompt-driven build sequence is at prompt 06 of 14. Prompt 07 (PushPilot agent) is next.
 
 ---
 
@@ -22,7 +22,7 @@ Planning phases P0–P2 are complete. The prompt-driven build sequence is at pro
 | **P0 — Problem framing** | Problem statement, sponsor alignment | ✅ Done |
 | **P1 — Pattern decision** | ADR-001 (pattern), ADR-002 (topology) | ✅ Done |
 | **P2 — Decision design** | Six-gate decision criteria, architecture | ✅ Done |
-| **P3 — Agent prompt authoring** | CLAUDE.md, signalscribe.md, buatlas.md, pushpilot.md | 🚧 In progress (CLAUDE.md done in prompt 03.5; agents next in prompts 05–07) |
+| **P3 — Agent prompt authoring** | CLAUDE.md, signalscribe.md, buatlas.md, pushpilot.md | 🚧 In progress (CLAUDE.md done in 03.5; signalscribe.md done in 05; buatlas.md done in 06; pushpilot.md next in 07) |
 | **P4 — Schemas and contracts** | JSON schemas + Pydantic models for data contracts | ✅ Done (completed ahead of schedule in prompt 02) |
 | **P5 — Config + fixtures** | BU registry, profiles, policy, synthetic change fixtures | ✅ Done (completed ahead of schedule in prompt 03) |
 | **P6 — Skills** | Skill definitions and implementations | ⏳ Prompts 08–10 |
@@ -69,6 +69,12 @@ Planning phases P0–P2 are complete. The prompt-driven build sequence is at pro
 | 31 | SignalScribe eval script | `scripts/eval_signalscribe.py` | 05 | Runs all 8 fixtures, reports decision chain match status |
 | 32 | SignalScribe unit tests | `tests/unit/agents/test_signalscribe_unit.py` | 05 | Mocked-client tests; contract, retry, error handling |
 | 33 | SignalScribe integration tests | `tests/integration/agents/test_signalscribe_integration.py` | 05 | Real-API tests; @pytest.mark.llm; skipped by default |
+| 34 | BUAtlas agent | `src/pulsecraft/agents/buatlas.py` | 06 | Real LLM-backed agent; gates 4/5; Protocol-compliant; retry + validation retry |
+| 35 | BUAtlas fan-out | `src/pulsecraft/agents/buatlas_fanout.py` | 06 | asyncio.gather + asyncio.to_thread; Semaphore; FanoutFailure isolation |
+| 36 | BUAtlas system prompt | `.claude/agents/buatlas.md` | 06 | 408-line canonical prompt; default bias ADJACENT; gate-5 self-critique framing |
+| 37 | BUAtlas eval script | `scripts/eval_buatlas.py` | 06 | Variance-aware N=3 per fixture; match/close/false_positive/mismatch classification |
+| 38 | BUAtlas unit tests | `tests/unit/agents/test_buatlas_unit.py`, `test_buatlas_fanout_unit.py` | 06 | 33 unit tests: protocol, retry, isolation, fanout ordering/failures/concurrency |
+| 39 | BUAtlas integration tests | `tests/integration/agents/test_buatlas_integration.py` | 06 | 10 real-API tests; @pytest.mark.llm; skipped by default |
 
 ---
 

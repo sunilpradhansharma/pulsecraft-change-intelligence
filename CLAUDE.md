@@ -28,9 +28,10 @@
 - ✅ 03.6 — Repo hygiene (track untracked files, revert hello.py, sync CLAUDE.md + planning index)
 - ✅ 04 — Deterministic orchestrator: state machine, agent Protocols, mock agents, audit writer, HITL queue, engine, CLI, 187 tests
 - ✅ 05 — SignalScribe agent (gates 1, 2, 3) — real LLM-backed, Claude Sonnet 4.6
+- ✅ 06 — BUAtlas agent (gates 4, 5) — parallel per-BU personalization, asyncio fan-out, FanoutFailure isolation
 
 **Prompts remaining:**
-- ⏳ 06 — Agent: BUAtlas (gates 4, 5, parallel per-BU)
+- ⏳ 07 — Agent: PushPilot (gate 6)
 - ⏳ 07 — Agent: PushPilot (gate 6)
 - ⏳ 08 — Skills: ingest adapters
 - ⏳ 09 — Skills: registry, policy, audit
@@ -130,6 +131,16 @@ If a prompt authors **commands**, list them in the Commands section of this file
 - **Model:** `claude-sonnet-4-6` via Anthropic API
 - **Tools:** none yet (gate-3 clarification tools come in a future prompt)
 - **Eval script:** `scripts/eval_signalscribe.py`
+
+### BUAtlas (prompt 06)
+- **Location:** `src/pulsecraft/agents/buatlas.py`
+- **Fan-out:** `src/pulsecraft/agents/buatlas_fanout.py` (`buatlas_fanout` async, `buatlas_fanout_sync` wrapper)
+- **Prompt:** `.claude/agents/buatlas.md`
+- **Owns gates:** 4, 5
+- **Protocol:** `BUAtlasProtocol` (see `orchestrator/agent_protocol.py`)
+- **Model:** `claude-sonnet-4-6` via Anthropic API
+- **Default bias:** ADJACENT (false positives are the single largest trust-erosion risk)
+- **Eval script:** `scripts/eval_buatlas.py`
 
 ## Hooks configured so far
 
@@ -233,5 +244,5 @@ Uses default mock agents. Prints Rich tables: state-transition audit chain, BU r
 
 ---
 
-*Last updated: prompt 05 (SignalScribe — first real LLM-backed agent, gates 1/2/3, eval script, CLI --real-signalscribe flag).*
-*Next prompt: 06 — BUAtlas agent (gates 4, 5, parallel per-BU).*
+*Last updated: prompt 06 (BUAtlas — second real LLM-backed agent, gates 4/5, asyncio fan-out, FanoutFailure isolation, eval script, CLI --real-buatlas flag).*
+*Next prompt: 07 — PushPilot agent (gate 6).*

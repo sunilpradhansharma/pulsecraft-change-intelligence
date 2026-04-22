@@ -6,7 +6,7 @@ PulseCraft is an internal AI service that monitors marketplace product and featu
 
 The service turns unstructured change artifacts (release notes, changelogs, announcements) into structured signals, maps each signal to the BUs most likely to care, drafts concise BU-tailored messages, and routes them through a human-in-the-loop approval gate before delivery.
 
-**Status:** Planning phase complete. Implementation in progress — orchestrator complete (prompt 04), SignalScribe agent live (prompt 05). BUAtlas authoring next in prompt 06.
+**Status:** Planning phase complete. Implementation in progress — orchestrator complete (prompt 04), SignalScribe agent live (prompt 05), BUAtlas agent live (prompt 06). PushPilot authoring next in prompt 07.
 
 > **For Claude Code sessions:** read [`CLAUDE.md`](CLAUDE.md) for standing instructions before taking any action in this repo.
 
