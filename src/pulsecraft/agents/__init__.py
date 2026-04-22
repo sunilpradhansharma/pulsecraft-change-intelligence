@@ -2,6 +2,7 @@
 
 from pulsecraft.agents.buatlas import BUAtlas
 from pulsecraft.agents.buatlas_fanout import FanoutFailure, buatlas_fanout, buatlas_fanout_sync
+from pulsecraft.agents.pushpilot import PushPilot
 from pulsecraft.agents.signalscribe import (
     AgentInvocationError,
     AgentOutputValidationError,
@@ -13,6 +14,7 @@ __all__ = [
     "AgentOutputValidationError",
     "BUAtlas",
     "FanoutFailure",
+    "PushPilot",
     "SignalScribe",
     "buatlas_fanout",
     "buatlas_fanout_sync",

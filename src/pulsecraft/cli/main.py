@@ -2,13 +2,27 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
-import typer
-from rich.console import Console
-from rich.panel import Panel
-from rich.table import Table
-from rich.text import Text
+
+def _load_env() -> None:
+    env_path = Path(__file__).parent.parent.parent.parent / ".env"
+    if env_path.exists():
+        for line in env_path.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, _, value = line.partition("=")
+                os.environ.setdefault(key.strip(), value.strip())
+
+
+_load_env()
+
+import typer  # noqa: E402
+from rich.console import Console  # noqa: E402
+from rich.panel import Panel  # noqa: E402
+from rich.table import Table  # noqa: E402
+from rich.text import Text  # noqa: E402
 
 app = typer.Typer(
     name="pulsecraft",
@@ -86,6 +100,16 @@ def run_change(
     )
 
     # Build agents
+    from pulsecraft.orchestrator.agent_protocol import (
+        BUAtlasProtocol,
+        PushPilotProtocol,
+        SignalScribeProtocol,
+    )
+
+    signalscribe_agent: SignalScribeProtocol
+    buatlas_agent: BUAtlasProtocol
+    pushpilot_agent: PushPilotProtocol
+
     if real_signalscribe:
         from pulsecraft.agents.signalscribe import SignalScribe
 
@@ -108,9 +132,12 @@ def run_change(
         buatlas_agent = MockBUAtlas()
 
     if real_pushpilot:
-        err_console.print(
-            "[yellow]--real-pushpilot not yet implemented (prompt 07). Using mock.[/yellow]"
-        )
+        from pulsecraft.agents.pushpilot import PushPilot
+
+        pushpilot_agent = PushPilot()
+        console.print("[cyan]PushPilot:[/cyan] real (claude-sonnet-4-6)")
+    else:
+        pushpilot_agent = MockPushPilot()
 
     # Wire up infrastructure
     audit_writer = AuditWriter(root=audit_dir)
@@ -118,7 +145,7 @@ def run_change(
     orchestrator = Orchestrator(
         signalscribe=signalscribe_agent,
         buatlas=buatlas_agent,
-        pushpilot=MockPushPilot(),
+        pushpilot=pushpilot_agent,
         audit_writer=audit_writer,
         hitl_queue=hitl_queue,
         buatlas_fanout_fn=buatlas_fanout_fn,

@@ -15,12 +15,14 @@ import json
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
+from datetime import time as dt_time
 from typing import Any
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import structlog
 
-from pulsecraft.config.loader import get_bu_profile, get_bu_registry, get_policy
+from pulsecraft.config.loader import get_bu_profile, get_bu_registry, get_channel_policy, get_policy
 from pulsecraft.orchestrator.agent_protocol import (
     BUAtlasProtocol,
     PushPilotProtocol,
@@ -44,9 +46,11 @@ from pulsecraft.schemas.audit_record import (
     CorrelationIds,
     EventType,
 )
+from pulsecraft.schemas.bu_profile import BUProfile
 from pulsecraft.schemas.change_artifact import ChangeArtifact
 from pulsecraft.schemas.change_brief import ChangeBrief
-from pulsecraft.schemas.decision import DecisionVerb
+from pulsecraft.schemas.decision import Decision, DecisionAgent, DecisionVerb
+from pulsecraft.schemas.delivery_plan import Channel as DeliveryChannel
 from pulsecraft.schemas.delivery_plan import DeliveryDecision
 from pulsecraft.schemas.personalized_brief import (
     MessageQuality,
@@ -394,6 +398,184 @@ class Orchestrator:
 
         return False, None, "no HITL triggers fired"
 
+    # ── PushPilot policy enforcement ──────────────────────────────────────
+
+    @staticmethod
+    def _is_in_quiet_hours(
+        bu_profile: BUProfile, now_utc: datetime
+    ) -> tuple[bool, datetime | None]:
+        """Check if now_utc falls within the BU's quiet hours.
+
+        Returns (in_quiet, end_of_quiet_utc). end_of_quiet_utc is None when not in quiet hours.
+        Uses IANA timezone from bu_profile.preferences.quiet_hours.
+        """
+        qh = bu_profile.preferences.quiet_hours
+        try:
+            tz = ZoneInfo(qh.timezone)
+        except ZoneInfoNotFoundError:
+            # Unknown timezone — skip quiet-hours check to avoid false positives
+            logger.warning("quiet_hours_timezone_unknown", timezone=qh.timezone)
+            return False, None
+
+        now_local = now_utc.astimezone(tz)
+        sh, sm = map(int, qh.start.split(":"))
+        eh, em = map(int, qh.end.split(":"))
+        start = dt_time(sh, sm)
+        end = dt_time(eh, em)
+        current = now_local.time().replace(second=0, microsecond=0)
+
+        # Overnight window (start > end, e.g. 19:00 → 07:00)
+        in_quiet = current >= start or current < end if start > end else start <= current < end
+
+        if not in_quiet:
+            return False, None
+
+        # Compute end-of-quiet in UTC
+        today = now_local.date()
+        end_naive = datetime(today.year, today.month, today.day, eh, em)
+        end_local = end_naive.replace(tzinfo=tz)
+        if end_local <= now_local:
+            end_local = (end_naive + timedelta(days=1)).replace(tzinfo=tz)
+        return True, end_local.astimezone(UTC)
+
+    @staticmethod
+    def _select_channel(
+        bu_profile: BUProfile, agent_channel: DeliveryChannel | None
+    ) -> DeliveryChannel:
+        """Return an approved channel for this BU.
+
+        If the agent's preference is globally approved and in the BU's channel list, use it.
+        Otherwise, return the first BU-approved channel that is globally approved.
+        """
+        try:
+            channel_policy = get_channel_policy()
+            global_approved = {c.lower() for c in channel_policy.approved_channels.global_channels}
+        except Exception:
+            global_approved = {"teams", "email"}
+
+        bu_channels = [str(c).lower() for c in bu_profile.preferences.channels]
+
+        if agent_channel is not None:
+            agent_str = str(agent_channel).lower()
+            if agent_str in global_approved and agent_str in bu_channels:
+                return agent_channel
+
+        # Fall back to first BU channel that is globally approved
+        for ch_str in bu_channels:
+            if ch_str in global_approved:
+                try:
+                    return DeliveryChannel(ch_str)
+                except ValueError:
+                    continue
+
+        return DeliveryChannel.EMAIL
+
+    def _enforce_pushpilot_policy(
+        self,
+        change_id: str,
+        bu_id: str,
+        output: PushPilotOutput,
+        bu_profile: BUProfile,
+        policy: Policy,
+        correlation_ids: CorrelationIds | None = None,
+    ) -> PushPilotOutput:
+        """Apply code-level policy invariants after PushPilot returns.
+
+        If agent says SEND_NOW but policy forbids it, downgrade to HOLD_UNTIL.
+        Both the agent's original preference and the override are logged.
+        The returned PushPilotOutput may differ from the input.
+        """
+        now_utc = datetime.now(UTC)
+        agent_decision = output.decision
+        final_output = output
+
+        # ── Quiet hours check ──────────────────────────────────────────────
+        if output.decision == DeliveryDecision.SEND_NOW:
+            in_quiet, quiet_end = self._is_in_quiet_hours(bu_profile, now_utc)
+            if in_quiet and quiet_end is not None:
+                self._write_policy_check(
+                    change_id,
+                    "quiet_hours_override",
+                    passed=False,
+                    reason=f"bu={bu_id} agent=SEND_NOW overridden to HOLD_UNTIL(quiet_end={quiet_end.isoformat()})",
+                    correlation_ids=correlation_ids,
+                )
+                logger.info(
+                    "pushpilot_policy_override",
+                    change_id=change_id,
+                    bu_id=bu_id,
+                    agent_decision=str(agent_decision),
+                    override="hold_until",
+                    reason="quiet_hours",
+                    quiet_end=quiet_end.isoformat(),
+                )
+                # Build an override Decision that records both preferences
+                gate_dec = Decision(
+                    gate=6,
+                    verb=DecisionVerb.HOLD_UNTIL,
+                    reason=f"Policy override: agent preferred SEND_NOW but quiet hours active until {quiet_end.isoformat()}. Original reason: {output.reason[:200]}",
+                    confidence=output.confidence_score,
+                    decided_at=now_utc,
+                    agent=DecisionAgent(name="pushpilot", version="1.0"),
+                )
+                final_output = PushPilotOutput(
+                    decision=DeliveryDecision.HOLD_UNTIL,
+                    channel=output.channel,
+                    scheduled_time=quiet_end,
+                    reason=f"[POLICY OVERRIDE: quiet_hours] Agent preferred SEND_NOW. {output.reason[:400]}",
+                    confidence_score=output.confidence_score,
+                    gate_decision=gate_dec,
+                )
+
+        # ── Channel approval check ─────────────────────────────────────────
+        if final_output.decision != DeliveryDecision.ESCALATE:
+            approved_channel = self._select_channel(bu_profile, final_output.channel)
+            if approved_channel != final_output.channel:
+                self._write_policy_check(
+                    change_id,
+                    "channel_approval",
+                    passed=False,
+                    reason=f"bu={bu_id} agent preferred channel={final_output.channel} not approved; using {approved_channel}",
+                    correlation_ids=correlation_ids,
+                )
+                final_output = PushPilotOutput(
+                    decision=final_output.decision,
+                    channel=approved_channel,
+                    scheduled_time=final_output.scheduled_time,
+                    reason=final_output.reason,
+                    confidence_score=final_output.confidence_score,
+                    gate_decision=final_output.gate_decision,
+                )
+            else:
+                self._write_policy_check(
+                    change_id,
+                    "channel_approval",
+                    passed=True,
+                    reason=f"bu={bu_id} channel={approved_channel} approved",
+                    correlation_ids=correlation_ids,
+                )
+
+        # ── Confidence threshold check ─────────────────────────────────────
+        threshold = policy.confidence_thresholds.pushpilot.gate_6_any
+        if output.confidence_score < threshold:
+            self._write_policy_check(
+                change_id,
+                "pushpilot_confidence_check",
+                passed=False,
+                reason=f"bu={bu_id} confidence {output.confidence_score:.2f} < {threshold:.2f}",
+                correlation_ids=correlation_ids,
+            )
+        else:
+            self._write_policy_check(
+                change_id,
+                "pushpilot_confidence_check",
+                passed=True,
+                reason=f"bu={bu_id} confidence {output.confidence_score:.2f} >= {threshold:.2f}",
+                correlation_ids=correlation_ids,
+            )
+
+        return final_output
+
     # ── BU pre-filter ─────────────────────────────────────────────────────
 
     def _find_candidate_bus(self, change_brief: ChangeBrief) -> list[str]:
@@ -723,13 +905,17 @@ class Orchestrator:
 
         for bu_id, pb in worth_sending.items():
             bu_profile = get_bu_profile(bu_id)
-            output = self._pushpilot.invoke(pb, bu_profile)
-            delivery_outputs[bu_id] = output
+            raw_output = self._pushpilot.invoke(pb, bu_profile)
+            correlation = CorrelationIds(
+                brief_id=change_brief.brief_id,
+                personalized_brief_id=pb.personalized_brief_id,
+            )
 
+            # Log agent's raw preference before policy enforcement
             pp_decision_audit = AuditDecision(
                 gate=6,
-                verb=str(output.decision),
-                reason=output.reason[:200],
+                verb=str(raw_output.decision),
+                reason=raw_output.reason[:200],
             )
             self._write_agent_invocation(
                 change_id=change_id,
@@ -737,12 +923,15 @@ class Orchestrator:
                 agent_version=self._pushpilot.version,
                 input_data={"change_id": change_id, "bu_id": bu_id},
                 decisions=[pp_decision_audit],
-                output_summary=f"bu={bu_id} decision={output.decision} channel={output.channel}",
-                correlation_ids=CorrelationIds(
-                    brief_id=change_brief.brief_id,
-                    personalized_brief_id=pb.personalized_brief_id,
-                ),
+                output_summary=f"bu={bu_id} decision={raw_output.decision} channel={raw_output.channel}",
+                correlation_ids=correlation,
             )
+
+            # Apply code-level policy invariants (quiet hours, channel approval, confidence)
+            output = self._enforce_pushpilot_policy(
+                change_id, bu_id, raw_output, bu_profile, policy, correlation
+            )
+            delivery_outputs[bu_id] = output
 
             if output.decision == DeliveryDecision.ESCALATE:
                 pushpilot_hitl = True
