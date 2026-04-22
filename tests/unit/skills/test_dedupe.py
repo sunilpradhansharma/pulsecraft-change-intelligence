@@ -9,7 +9,9 @@ from pulsecraft.schemas.audit_record import Actor, ActorType, AuditOutcome, Audi
 from pulsecraft.skills.dedupe import compute_dedupe_key, has_recent_duplicate
 
 
-def _make_delivery_record(input_hash: str, timestamp: datetime) -> AuditRecord:
+def _make_delivery_record(
+    input_hash: str, timestamp: datetime, dedupe_key: str | None = None
+) -> AuditRecord:
     return AuditRecord(
         audit_id=str(uuid.uuid4()),
         timestamp=timestamp,
@@ -18,6 +20,7 @@ def _make_delivery_record(input_hash: str, timestamp: datetime) -> AuditRecord:
         actor=Actor(type=ActorType.ORCHESTRATOR, id="orchestrator", version="1.0"),
         action="deliver",
         input_hash=input_hash,
+        dedupe_key=dedupe_key,
         output_summary="bu_id=bu_alpha decision=send_now channel=teams: delivered",
         outcome=AuditOutcome.SUCCESS,
     )
@@ -76,7 +79,9 @@ class TestHasRecentDuplicate:
     def test_recent_matching_record_returns_true(self) -> None:
         key = compute_dedupe_key("c1", "bu_alpha", "r1", "v1")
         now = datetime.now(UTC)
-        record = _make_delivery_record(input_hash=key, timestamp=now - timedelta(hours=1))
+        record = _make_delivery_record(
+            input_hash="somehash", timestamp=now - timedelta(hours=1), dedupe_key=key
+        )
         reader = _MockReader([record])
         assert has_recent_duplicate(key, reader, window_hours=24) is True
 

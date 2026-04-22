@@ -15,8 +15,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import pytest
-
 from pulsecraft.schemas.change_artifact import ChangeArtifact
 
 # Path to the pulsecraft CLI entry point inside the venv

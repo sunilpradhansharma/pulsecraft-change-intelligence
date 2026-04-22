@@ -102,6 +102,10 @@
       "type": "string",
       "description": "SHA-256 hex digest of the serialized input to this action. Never the raw input — hashing prevents PII from landing in audit records while preserving replay integrity."
     },
+    "dedupe_key": {
+      "type": ["string", "null"],
+      "description": "Populated on delivery_attempt events only. SHA-256 of (change_id, bu_id, recipient_id, message_variant_id). Used by has_recent_duplicate for replay-safe deduplication."
+    },
     "output_summary": {
       "type": "string",
       "maxLength": 500,

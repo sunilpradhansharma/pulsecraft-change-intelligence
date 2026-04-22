@@ -72,7 +72,3 @@ Each agent's judgment is defined in detail in [`planning/01-decision-criteria.md
 | [`architecture.svg`](architecture.svg) / [`architecture.png`](architecture.png) | The architecture diagram |
 
 ---
-
-## Sponsor
-
-**Head of AI, AbbVie.**

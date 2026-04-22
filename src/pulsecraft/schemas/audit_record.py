@@ -131,6 +131,12 @@ class AuditRecord(BaseModel):
         description="SHA-256 hex digest of the serialized input. "
         "Never the raw input — hashing prevents PII from landing in audit records."
     )
+    dedupe_key: str | None = Field(
+        default=None,
+        description="Populated on delivery_attempt events only. "
+        "SHA-256 of (change_id, bu_id, recipient_id, message_variant_id). "
+        "Used by has_recent_duplicate to enable replay-safe deduplication.",
+    )
     output_summary: str = Field(
         max_length=500,
         description="Structured summary of the action output. Must not dump raw LLM responses "

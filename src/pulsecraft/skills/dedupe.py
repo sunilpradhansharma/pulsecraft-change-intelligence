@@ -33,11 +33,11 @@ def has_recent_duplicate(
     audit_reader: AuditReader,
     window_hours: int,
 ) -> bool:
-    """Return True if a delivery_attempt record with input_hash == dedupe_key exists in window.
+    """Return True if a delivery_attempt record with dedupe_key == dedupe_key exists in window.
 
     Scans all DELIVERY_ATTEMPT records in the audit log within the last window_hours.
-    For a match to occur, the record's input_hash must equal the dedupe_key — this
-    requires the delivery record was written using compute_dedupe_key as the input_hash.
+    Matches against AuditRecord.dedupe_key (not input_hash). Delivery records must be
+    written by _write_delivery with the dedupe_key field populated for this to work.
     """
     records = audit_reader.read_recent_events(EventType.DELIVERY_ATTEMPT, window_hours)
-    return any(r.input_hash == dedupe_key for r in records)
+    return any(r.dedupe_key == dedupe_key for r in records)

@@ -50,6 +50,7 @@ from pulsecraft.schemas.bu_profile import BUProfile
 from pulsecraft.schemas.change_artifact import ChangeArtifact
 from pulsecraft.schemas.change_brief import ChangeBrief
 from pulsecraft.schemas.decision import Decision, DecisionAgent, DecisionVerb
+from pulsecraft.schemas.delivery_payloads import ScheduledDelivery
 from pulsecraft.schemas.delivery_plan import Channel as DeliveryChannel
 from pulsecraft.schemas.delivery_plan import DeliveryDecision
 from pulsecraft.schemas.personalized_brief import (
@@ -59,6 +60,8 @@ from pulsecraft.schemas.personalized_brief import (
 )
 from pulsecraft.schemas.policy import Policy
 from pulsecraft.schemas.push_pilot_output import PushPilotOutput
+from pulsecraft.skills.dedupe import compute_dedupe_key, has_recent_duplicate
+from pulsecraft.skills.delivery.common import RenderingError
 from pulsecraft.skills.policy import check_confidence_threshold, evaluate_hitl_triggers
 from pulsecraft.skills.registry import lookup_bu_candidates
 
@@ -218,6 +221,7 @@ class Orchestrator:
         channel: str | None,
         reason: str,
         correlation_ids: CorrelationIds | None = None,
+        dedupe_key: str | None = None,
     ) -> None:
         record = AuditRecord(
             audit_id=str(uuid.uuid4()),
@@ -230,6 +234,7 @@ class Orchestrator:
             input_hash=_sha256({"bu_id": bu_id, "decision": decision}),
             output_summary=f"bu_id={bu_id} decision={decision} channel={channel}: {reason}"[:500],
             outcome=AuditOutcome.SUCCESS,
+            dedupe_key=dedupe_key,
         )
         self._audit.log_event(record)
 
@@ -450,38 +455,91 @@ class Orchestrator:
 
         return final_output
 
-    # ── delivery execution (mock) ─────────────────────────────────────────
+    # ── delivery execution ────────────────────────────────────────────────
 
     def _execute_delivery(
         self,
         change_id: str,
         bu_id: str,
         output: PushPilotOutput,
-        brief_id: str,
-    ) -> str:
-        """Mock delivery: log what would happen. Returns the decision string."""
-        channel_str = str(output.channel) if output.channel else "unspecified"
-        decision_str = str(output.decision)
-        correlation = CorrelationIds(personalized_brief_id=brief_id)
+        pb: PersonalizedBrief,
+        bu_profile: BUProfile,
+    ) -> tuple[str, bool]:
+        """Execute delivery for one BU via render → dedupe-check → send chain.
 
-        if output.decision == DeliveryDecision.SEND_NOW:
-            logger.info(
-                "mock_delivery",
-                change_id=change_id,
-                bu_id=bu_id,
-                channel=channel_str,
-                decision=decision_str,
-            )
-        elif output.decision == DeliveryDecision.HOLD_UNTIL:
-            logger.info(
-                "mock_hold",
-                change_id=change_id,
-                bu_id=bu_id,
-                until=str(output.scheduled_time),
-            )
-        elif output.decision == DeliveryDecision.DIGEST:
-            logger.info("mock_digest", change_id=change_id, bu_id=bu_id)
+        Returns (decision_str, is_dedupe_conflict). Caller routes to HITL when
+        is_dedupe_conflict is True.
+        """
+        channel = output.channel
+        decision = output.decision
+        channel_str = str(channel) if channel else "unspecified"
+        decision_str = str(decision)
+        correlation = CorrelationIds(personalized_brief_id=pb.personalized_brief_id)
+        recipient_id = f"{bu_id}:head"
 
+        # 1. Render payload by channel
+        variant_text = f"{bu_id}:{channel_str}:{change_id}"
+        payload_obj: object = None
+
+        if decision != DeliveryDecision.ESCALATE:
+            try:
+                if channel == DeliveryChannel.TEAMS:
+                    from pulsecraft.skills.delivery.render_teams_card import render_teams_card
+
+                    teams_payload = render_teams_card(pb, bu_profile)
+                    payload_obj = teams_payload
+                    import json as _json
+
+                    variant_text = _json.dumps(teams_payload.card_json, sort_keys=True)
+                elif channel == DeliveryChannel.EMAIL:
+                    from pulsecraft.skills.delivery.render_email import render_email
+
+                    email_payload = render_email(pb, bu_profile)
+                    payload_obj = email_payload
+                    variant_text = email_payload.body_text
+                elif channel == DeliveryChannel.PUSH:
+                    from pulsecraft.skills.delivery.render_push import render_push
+
+                    push_payload = render_push(pb, bu_profile)
+                    payload_obj = push_payload
+                    variant_text = f"{push_payload.title} {push_payload.body}"
+            except RenderingError as exc:
+                logger.warning(
+                    "render_failed",
+                    change_id=change_id,
+                    bu_id=bu_id,
+                    error=str(exc)[:200],
+                )
+                self._write_delivery(
+                    change_id=change_id,
+                    bu_id=bu_id,
+                    decision=decision_str,
+                    channel=channel_str,
+                    reason=f"render_failed: {str(exc)[:200]}",
+                    correlation_ids=correlation,
+                )
+                return decision_str, False
+
+        # 2. Compute dedupe key from (change_id, bu_id, recipient_id, variant content)
+        variant_id = _sha256(variant_text)
+        dedupe_key = compute_dedupe_key(change_id, bu_id, recipient_id, variant_id)
+
+        # 3. Dedupe check — only for SEND_NOW; DIGEST/HOLD_UNTIL are scheduled, not sent
+        if decision == DeliveryDecision.SEND_NOW:
+            try:
+                window_hours = get_channel_policy().dedupe.window_hours
+            except Exception:
+                window_hours = 24
+            if has_recent_duplicate(dedupe_key, self._audit, window_hours):
+                logger.info(
+                    "dedupe_conflict_detected",
+                    change_id=change_id,
+                    bu_id=bu_id,
+                    dedupe_key=dedupe_key[:16],
+                )
+                return decision_str, True
+
+        # 4. Write delivery_attempt audit record with dedupe_key populated
         self._write_delivery(
             change_id=change_id,
             bu_id=bu_id,
@@ -489,8 +547,116 @@ class Orchestrator:
             channel=channel_str,
             reason=output.reason,
             correlation_ids=correlation,
+            dedupe_key=dedupe_key,
         )
-        return decision_str
+
+        if decision == DeliveryDecision.SEND_NOW:
+            # 5. Send immediately via channel-specific adapter
+            try:
+                from pulsecraft.schemas.delivery_payloads import DeliveryResult
+
+                delivery_result: DeliveryResult
+                if channel == DeliveryChannel.TEAMS and payload_obj is not None:
+                    from pulsecraft.skills.delivery.send_teams import send_teams
+
+                    delivery_result = send_teams(payload_obj, recipient_id)  # type: ignore[arg-type]
+                elif channel == DeliveryChannel.EMAIL and payload_obj is not None:
+                    from pulsecraft.skills.delivery.send_email import send_email
+
+                    delivery_result = send_email(payload_obj, recipient_id)  # type: ignore[arg-type]
+                elif channel == DeliveryChannel.PUSH and payload_obj is not None:
+                    from pulsecraft.skills.delivery.send_push import send_push
+
+                    delivery_result = send_push(payload_obj, recipient_id)  # type: ignore[arg-type]
+                else:
+                    delivery_result = DeliveryResult(
+                        delivery_id=str(uuid.uuid4()),
+                        outcome="sent",
+                        transport_ref="dev_mode_no_renderer",
+                        sent_at=_utcnow(),
+                    )
+                logger.info(
+                    "delivery_sent",
+                    change_id=change_id,
+                    bu_id=bu_id,
+                    channel=channel_str,
+                    outcome=delivery_result.outcome,
+                )
+            except Exception as exc:
+                logger.warning(
+                    "send_failed",
+                    change_id=change_id,
+                    bu_id=bu_id,
+                    error=str(exc)[:200],
+                )
+
+        elif decision in (DeliveryDecision.HOLD_UNTIL, DeliveryDecision.DIGEST):
+            # 6. Schedule for future delivery
+            try:
+                from pulsecraft.skills.delivery.schedule_send import schedule_send
+
+                tz = bu_profile.preferences.quiet_hours.timezone
+                scheduled = schedule_send(
+                    decision=decision,
+                    channel=channel,
+                    scheduled_time=output.scheduled_time,
+                    delivery_id=str(uuid.uuid4()),
+                    recipient_timezone=tz,
+                )
+                self._persist_scheduled_delivery(change_id, bu_id, scheduled)
+                logger.info(
+                    "delivery_scheduled",
+                    change_id=change_id,
+                    bu_id=bu_id,
+                    send_at=scheduled.send_at.isoformat(),
+                    decision=decision_str,
+                )
+            except Exception as exc:
+                logger.warning(
+                    "schedule_failed",
+                    change_id=change_id,
+                    bu_id=bu_id,
+                    error=str(exc)[:200],
+                )
+
+        return decision_str, False
+
+    def _persist_scheduled_delivery(
+        self,
+        change_id: str,
+        bu_id: str,
+        scheduled: ScheduledDelivery,
+    ) -> None:
+        """Write a ScheduledDelivery to queue/scheduled/<YYYY-MM-DD>/<delivery_id>.json."""
+        import json as _json
+
+        try:
+            scheduled_root = self._hitl._root.parent / "scheduled"
+            date_dir = scheduled_root / scheduled.send_at.strftime("%Y-%m-%d")
+            date_dir.mkdir(parents=True, exist_ok=True)
+            file_path = date_dir / f"{scheduled.delivery_id}.json"
+            file_path.write_text(
+                _json.dumps(
+                    {
+                        "delivery_id": scheduled.delivery_id,
+                        "change_id": change_id,
+                        "bu_id": bu_id,
+                        "send_at": scheduled.send_at.isoformat(),
+                        "channel": scheduled.channel,
+                        "reason": scheduled.reason,
+                    },
+                    indent=2,
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+        except Exception as exc:
+            logger.warning(
+                "persist_scheduled_delivery_failed",
+                change_id=change_id,
+                bu_id=bu_id,
+                error=str(exc)[:200],
+            )
 
     # ── main entry point ──────────────────────────────────────────────────
 
@@ -824,9 +990,37 @@ class Orchestrator:
             return result
 
         # ── Step 7: Execute deliveries ────────────────────────────────────
+        dedupe_conflict_bu: str | None = None
         for bu_id, output in delivery_outputs.items():
             pb = worth_sending[bu_id]
-            self._execute_delivery(change_id, bu_id, output, pb.personalized_brief_id)
+            bu_profile = get_bu_profile(bu_id)
+            _decision_str, is_dedupe_conflict = self._execute_delivery(
+                change_id, bu_id, output, pb, bu_profile
+            )
+            if is_dedupe_conflict:
+                dedupe_conflict_bu = bu_id
+                break
+
+        if dedupe_conflict_bu is not None:
+            state = self._transition(
+                change_id,
+                state,
+                "dedupe_conflict",
+                f"duplicate delivery detected for bu={dedupe_conflict_bu}",
+            )
+            self._hitl.enqueue(
+                change_id,
+                HITLReason.DEDUPE_OR_RATE_LIMIT_CONFLICT,
+                {
+                    "brief_id": change_brief.brief_id,
+                    "reason": f"dedupe conflict for bu={dedupe_conflict_bu}",
+                },
+            )
+            result.hitl_queued = True
+            result.hitl_reason = HITLReason.DEDUPE_OR_RATE_LIMIT_CONFLICT
+            result.terminal_state = state
+            result.audit_record_count = self._audit.record_count(change_id)
+            return result
 
         # ── Step 8: Determine terminal state from delivery decisions ──────
         decisions_made = [o.decision for o in delivery_outputs.values()]

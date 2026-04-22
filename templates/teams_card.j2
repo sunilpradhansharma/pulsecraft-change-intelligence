@@ -1,0 +1,15 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    { "type": "TextBlock", "size": "Large", "weight": "Bolder", "text": "{{ title }}" },
+    { "type": "TextBlock", "wrap": true, "text": "{{ body }}" }{% if recommended_actions %},
+    { "type": "TextBlock", "weight": "Bolder", "text": "Recommended actions:" },
+    { "type": "FactSet", "facts": [
+      {% for action in recommended_actions %}
+      { "title": "{{ action.owner }}", "value": "{{ action.action }}{% if action.by_when %} (by {{ action.by_when }}){% endif %}" }{% if not loop.last %},{% endif %}
+
+      {% endfor %}
+    ] }{% endif %}
+  ]
+}

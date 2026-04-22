@@ -33,9 +33,9 @@
 - ✅ 07.7 — Demo reliability fix: BU pre-filter vocabulary expansion for fixture 001 determinism
 - ✅ 08 — Skills: ingest adapters (5 adapters + normalizer + redaction + CLI restructure, 390 tests)
 - ✅ 09 — Skills: registry, policy, dedupe, audit, past_engagement (extracted from engine.py, 442 tests)
+- ✅ 10 — Skills: delivery rendering (render + send + schedule, 4 renderers, 3 send adapters, 1 scheduler, dedupe audit fix, 495 tests)
 
 **Prompts remaining:**
-- ⏳ 10 — Skills: delivery rendering
 - ⏳ 11 — Operator slash commands
 - ⏳ 12 — Guardrail hooks
 - ⏳ 13 — First end-to-end dryrun
@@ -136,7 +136,7 @@ Location: `src/pulsecraft/skills/`
 | `check_restricted_terms` | Scan text for commitment/MLR/sensitive-data phrases; returns list of RestrictedTermHit | str, Policy |
 | `evaluate_hitl_triggers` | Aggregate all HITL triggers across PersonalizedBriefs; returns list of HITLTrigger (empty = no triggers) | dict[str,PersonalizedBrief], Policy |
 | `compute_dedupe_key` | Deterministic SHA-256 hash for (change_id, bu_id, recipient_id, variant_id) | 4 strings |
-| `has_recent_duplicate` | Scan DELIVERY_ATTEMPT audit records for matching input_hash within window | dedupe_key, AuditReader, window_hours |
+| `has_recent_duplicate` | Scan DELIVERY_ATTEMPT audit records for matching dedupe_key within window | dedupe_key, AuditReader, window_hours |
 | `write_audit` | Thin wrapper over AuditWriter.log_event for use in hooks/commands | AuditRecord, AuditWriter |
 | `lookup_past_engagement` | Reconstruct PastEngagement from DELIVERY_ATTEMPT audit history for a BU | bu_id, recipient_id, AuditReader |
 
@@ -144,6 +144,26 @@ Called from: orchestrator (engine.py), hooks (prompt 12), operator commands (pro
 
 New types: `RestrictedTermHit` and `HITLTrigger` (dataclasses in `skills/policy.py`).
 `AuditReader` Protocol defined in `orchestrator/audit.py`; `AuditWriter` satisfies it.
+
+### Delivery skills (prompt 10)
+Location: `src/pulsecraft/skills/delivery/`
+
+| Skill | Purpose | Inputs → Output |
+|---|---|---|
+| `render_teams_card` | Render Adaptive Card v1.5 JSON for Teams channel | PersonalizedBrief, BUProfile → TeamsCardPayload |
+| `render_email` | Render plain-text + HTML email with subject | PersonalizedBrief, BUProfile → EmailPayload |
+| `render_push` | Render short push notification (title ≤65, body ≤240) | PersonalizedBrief, BUProfile → PushPayload |
+| `render_portal_digest` | Render combined Markdown digest for multiple briefs | list[PersonalizedBrief], BUProfile → DigestPayload |
+| `send_teams` | Dev-mode send (writes JSON file) or injectable transport | TeamsCardPayload, recipient, transport? → DeliveryResult |
+| `send_email` | Dev-mode send or injectable transport | EmailPayload, recipient, transport? → DeliveryResult |
+| `send_push` | Dev-mode send or injectable transport | PushPayload, recipient, transport? → DeliveryResult |
+| `schedule_send` | Compute send_at for SEND_NOW / HOLD_UNTIL / DIGEST | DeliveryDecision, channel, scheduled_time, tz → ScheduledDelivery |
+
+Templates: `templates/*.j2` (teams_card.j2, email.txt.j2, email.html.j2, push.j2, portal_digest.md.j2)
+New schemas: `delivery_payloads.py` — TeamsCardPayload, EmailPayload, PushPayload, DigestPayload, DeliveryResult, ScheduledDelivery
+Errors: `DeliveryFailed`, `DeliveryRetriable`, `DeliveryUnauthorized` (in send_teams.py, re-exported from `__init__.py`)
+Dedupe audit fix: `AuditRecord.dedupe_key` field added; `has_recent_duplicate` now queries `r.dedupe_key`; `_execute_delivery` populates it.
+New state transition: `(SCHEDULED, "dedupe_conflict") → AWAITING_HITL`
 
 ## Commands authored so far
 
@@ -283,5 +303,5 @@ Uses default mock agents. Prints Rich tables: state-transition audit chain, BU r
 
 ---
 
-*Last updated: prompt 09 (registry/policy/audit skills — extracted from engine.py; 5 new skill modules; AuditReader Protocol; 442 tests passing).*
-*Next prompt: 10 — Skills: delivery rendering.*
+*Last updated: prompt 10 (delivery skills — 4 renderers, 3 send adapters, scheduler, Jinja2 templates, dedupe audit fix; 495 tests passing).*
+*Next prompt: 11 — Operator slash commands.*

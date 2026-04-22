@@ -9,9 +9,9 @@
 
 **Phase:** Active implementation — schemas and config complete, agent authoring next.
 
-**Last completed:** Prompt 09 (registry/policy/audit skills — extracted from engine.py; 5 new skill modules + AuditReader Protocol; 442 tests passing).
+**Last completed:** Prompt 10 (delivery rendering skills — 4 renderers, 3 send adapters, scheduler, Jinja2 templates, dedupe audit fix; 495 tests passing).
 
-Planning phases P0–P2 are complete. The prompt-driven build sequence is at prompt 09. Prompt 10 (delivery rendering skills) is next.
+Planning phases P0–P2 are complete. The prompt-driven build sequence is at prompt 10. Prompt 11 (operator slash commands) is next.
 
 ---
 
@@ -100,6 +100,18 @@ Planning phases P0–P2 are complete. The prompt-driven build sequence is at pro
 | 62 | Past engagement skill | `src/pulsecraft/skills/past_engagement.py` | 09 | lookup_past_engagement — reconstruct BU history from DELIVERY_ATTEMPT records |
 | 63 | AuditReader Protocol | `src/pulsecraft/orchestrator/audit.py` | 09 | Protocol with read_chain + read_recent_events; AuditWriter satisfies it |
 | 64 | Skills unit tests | `tests/unit/skills/test_registry.py`, `test_policy.py`, `test_dedupe.py`, `test_past_engagement.py` | 09 | 52 new unit tests across 4 test modules |
+| 65 | Delivery payload schemas | `src/pulsecraft/schemas/delivery_payloads.py` | 10 | TeamsCardPayload, EmailPayload, PushPayload, DigestPayload, DeliveryResult, ScheduledDelivery |
+| 66 | Jinja2 templates | `templates/` (5 files) | 10 | teams_card.j2, email.txt.j2, email.html.j2, push.j2, portal_digest.md.j2 |
+| 67 | Delivery renderer skills (×4) | `src/pulsecraft/skills/delivery/render_*.py` | 10 | render_teams_card, render_email, render_push, render_portal_digest |
+| 68 | Send adapter skills (×3) | `src/pulsecraft/skills/delivery/send_*.py` | 10 | send_teams, send_email, send_push — dev-mode file write + injectable transport |
+| 69 | Schedule send skill | `src/pulsecraft/skills/delivery/schedule_send.py` | 10 | SEND_NOW/HOLD_UNTIL/DIGEST timing computation |
+| 70 | Delivery skill common module | `src/pulsecraft/skills/delivery/common.py` | 10 | get_template_env, validate_length, RenderingError |
+| 71 | AuditRecord dedupe_key field | `src/pulsecraft/schemas/audit_record.py`, `schemas/audit_record.schema.json` | 10 | New optional field; populated on DELIVERY_ATTEMPT events |
+| 72 | has_recent_duplicate fix | `src/pulsecraft/skills/dedupe.py` | 10 | Now queries r.dedupe_key (was r.input_hash — bug fix) |
+| 73 | Orchestrator _execute_delivery refactor | `src/pulsecraft/orchestrator/engine.py` | 10 | Full render→dedupe→send chain; returns (decision_str, is_dedupe_conflict) |
+| 74 | New state transition | `src/pulsecraft/orchestrator/states.py` | 10 | (SCHEDULED, "dedupe_conflict") → AWAITING_HITL |
+| 75 | Delivery skill tests | `tests/unit/skills/delivery/` (8 test files) | 10 | 53 tests: renderers, send adapters, scheduler |
+| 76 | Delivery audit tests | `tests/unit/orchestrator/test_delivery_audit.py` | 10 | 4 end-to-end dedupe correctness tests |
 
 ---
 
@@ -173,7 +185,7 @@ All implementation happens via prompts in `/prompts/`, run one at a time in Clau
 | 07.7 | `prompts/07.7-demo-reliability-fix.md` | BU pre-filter vocabulary expansion — fixture 001 determinism | ✅ Done |
 | 08 | `prompts/08-skills-ingest.md` | Ingest adapter skills | ✅ Done |
 | 09 | `prompts/09-skills-registry-policy.md` | Registry, policy, audit skills — extracted from engine.py | ✅ Done |
-| 10 | `prompts/10-skills-delivery.md` | Delivery rendering skills | ⏳ |
+| 10 | `prompts/10-skills-delivery.md` | Delivery rendering skills | ✅ Done |
 | 11 | `prompts/11-commands.md` | Operator slash commands | ⏳ |
 | 12 | `prompts/12-hooks.md` | Guardrail hooks in settings.json | ⏳ |
 | 13 | `prompts/13-dryrun-walkthrough.md` | First end-to-end dryrun | ⏳ |

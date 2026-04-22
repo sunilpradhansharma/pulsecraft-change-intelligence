@@ -1,0 +1,23 @@
+# PulseCraft Daily Digest — {{ digest_date }}
+
+**BU:** {{ bu_name }}
+
+---
+{% for item in items %}
+
+## {{ loop.index }}. {{ item.title }}
+
+{{ item.why_relevant }}
+{% if item.recommended_actions %}
+
+**Actions:**
+{% for action in item.recommended_actions %}
+- **{{ action.owner }}**: {{ action.action }}{% if action.by_when %} *(by {{ action.by_when }})*{% endif %}
+
+{% endfor %}
+{% endif %}
+
+---
+{% endfor %}
+
+*{{ item_count }} item(s) in this digest.*

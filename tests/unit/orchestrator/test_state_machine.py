@@ -199,6 +199,6 @@ class TestValidTransitions:
         vt = valid_transitions(WorkflowState.ARCHIVED)
         assert vt == {}
 
-    def test_scheduled_has_five_valid_events(self) -> None:
+    def test_scheduled_has_six_valid_events(self) -> None:
         vt = valid_transitions(WorkflowState.SCHEDULED)
-        assert len(vt) == 5
+        assert len(vt) == 6

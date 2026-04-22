@@ -89,6 +89,8 @@ _TRANSITIONS: dict[tuple[WorkflowState, str], WorkflowState] = {
     (WorkflowState.SCHEDULED, "all_held"): WorkflowState.HELD,
     # PushPilot ESCALATE or post-schedule policy conflict
     (WorkflowState.SCHEDULED, "pushpilot_hitl"): WorkflowState.AWAITING_HITL,
+    # Dedupe or rate-limit conflict detected during delivery execution
+    (WorkflowState.SCHEDULED, "dedupe_conflict"): WorkflowState.AWAITING_HITL,
     (WorkflowState.SCHEDULED, "error"): WorkflowState.FAILED,
     # ── AWAITING_HITL (transitions driven by future HITL command prompt) ──
     (WorkflowState.AWAITING_HITL, "hitl_approved"): WorkflowState.PERSONALIZED,
