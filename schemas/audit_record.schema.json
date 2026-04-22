@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pulsecraft.abbvie.internal/schemas/audit_record.schema.json",
+  "title": "AuditRecord",
+  "description": "Append-only audit log entry. One record is written for every LLM invocation, tool call, hook firing, HITL action, delivery attempt, state transition, policy check, and error. Records are immutable once written. No PII anywhere — output_summary is a structured summary, never a raw LLM response dump.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "audit_id",
+    "timestamp",
+    "event_type",
+    "change_id",
+    "actor",
+    "action",
+    "input_hash",
+    "output_summary",
+    "outcome"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "audit_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "description": "UUID v4 identifier for this audit record. Monotonically inserted; use as primary key in the audit store."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC timestamp of the event."
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "agent_invocation",
+        "tool_call",
+        "hook_fired",
+        "hitl_action",
+        "delivery_attempt",
+        "state_transition",
+        "policy_check",
+        "error"
+      ],
+      "description": "Category of event that produced this record."
+    },
+    "change_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "description": "Always populated. The unit of end-to-end traceability. Every audit record for a given change event shares the same change_id."
+    },
+    "correlation_ids": {
+      "type": ["object", "null"],
+      "description": "Optional references to downstream contract identifiers for cross-record correlation. Null when no downstream contract context is available.",
+      "additionalProperties": false,
+      "properties": {
+        "brief_id": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "personalized_brief_id": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "delivery_id": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "invocation_id": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        }
+      }
+    },
+    "actor": {
+      "type": "object",
+      "required": ["type", "id"],
+      "additionalProperties": false,
+      "description": "The component or person that triggered this event.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["agent", "orchestrator", "skill", "hook", "human"]
+        },
+        "id": {
+          "type": "string",
+          "description": "Stable identifier for the actor (e.g., 'signalscribe', 'orchestrator', 'pre-delivery-hook', 'reviewer-<opaque-id>'). Must not be an email address."
+        },
+        "version": {
+          "type": ["string", "null"],
+          "description": "Version of the actor component. Null for human actors."
+        }
+      }
+    },
+    "action": {
+      "type": "string",
+      "description": "Short verb describing what the actor did (e.g., 'invoked', 'completed', 'redacted', 'approved', 'rejected', 'sent', 'held', 'escalated')."
+    },
+    "input_hash": {
+      "type": "string",
+      "description": "SHA-256 hex digest of the serialized input to this action. Never the raw input — hashing prevents PII from landing in audit records while preserving replay integrity."
+    },
+    "output_summary": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Structured summary of the action output. Must not dump raw LLM responses or contain PII, PHI, or secrets. Should be informative enough for the /explain command to reconstruct the decision chain."
+    },
+    "decision": {
+      "type": ["object", "null"],
+      "required": ["gate", "verb", "reason"],
+      "additionalProperties": false,
+      "description": "Populated for agent_invocation events that produce a gate decision. Null for non-agent-invocation events. Summarizes the gate outcome inline without requiring a join to the contract's decisions[] array.",
+      "properties": {
+        "gate": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "verb": {
+          "type": "string",
+          "description": "The decision verb (e.g., 'COMMUNICATE', 'AFFECTED', 'SEND_NOW')."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Short reason summary. Must not contain PII."
+        }
+      }
+    },
+    "metrics": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "description": "Optional performance and cost metrics for this event. Null for non-LLM events.",
+      "properties": {
+        "token_count_input": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Input token count for LLM calls. Null for non-LLM events."
+        },
+        "token_count_output": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Output token count for LLM calls. Null for non-LLM events."
+        },
+        "cost_usd": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "description": "Estimated cost in USD for this event. Null when not measured."
+        },
+        "latency_ms": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Wall-clock latency in milliseconds. Null when not measured."
+        }
+      }
+    },
+    "outcome": {
+      "type": "string",
+      "enum": ["success", "failure", "retry_scheduled", "escalated"],
+      "description": "Final outcome of this event."
+    },
+    "error": {
+      "type": ["object", "null"],
+      "required": ["code", "message"],
+      "additionalProperties": false,
+      "description": "Error details. Populated when outcome is 'failure'. Null otherwise. Must not contain PII or stack traces with internal paths.",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "Machine-readable error code (e.g., 'SCHEMA_VALIDATION_FAILURE', 'RATE_LIMIT_EXCEEDED')."
+        },
+        "message": {
+          "type": "string",
+          "description": "Human-readable error message. Must not contain PII or secrets."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pulsecraft.abbvie.internal/schemas/decision.schema.json",
+  "title": "Decision",
+  "description": "A single gate decision made by an agent, carried in the contract's decisions[] array. Enables full decision-chain replay.",
+  "type": "object",
+  "required": ["gate", "verb", "reason", "confidence", "decided_at", "agent"],
+  "additionalProperties": false,
+  "properties": {
+    "gate": { "type": "integer", "minimum": 1, "maximum": 6 },
+    "verb": {
+      "type": "string",
+      "enum": [
+        "COMMUNICATE", "ARCHIVE", "ESCALATE",
+        "RIPE", "HOLD_UNTIL", "HOLD_INDEFINITE",
+        "READY", "NEED_CLARIFICATION", "UNRESOLVABLE",
+        "AFFECTED", "ADJACENT", "NOT_AFFECTED",
+        "WORTH_SENDING", "WEAK", "NOT_WORTH",
+        "SEND_NOW", "DIGEST"
+      ]
+    },
+    "reason": { "type": "string", "maxLength": 1000 },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "decided_at": { "type": "string", "format": "date-time" },
+    "agent": {
+      "type": "object",
+      "required": ["name", "version"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "enum": ["signalscribe", "buatlas", "pushpilot"] },
+        "version": { "type": "string" }
+      }
+    },
+    "payload": {
+      "type": ["object", "null"],
+      "description": "Verb-specific extra data (e.g., HOLD_UNTIL carries a date + trigger; NEED_CLARIFICATION carries a questions array). Null when no extra data is needed.",
+      "additionalProperties": true
+    }
+  }
+}

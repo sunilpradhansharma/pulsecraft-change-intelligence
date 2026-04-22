@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pulsecraft.abbvie.internal/schemas/personalized_brief.schema.json",
+  "title": "PersonalizedBrief",
+  "description": "BUAtlas's output for a single BU, produced in parallel per candidate BU. Contains gate 4 (relevance) and gate 5 (message quality) decisions, plus BU-tailored message variants ready for channel rendering.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "personalized_brief_id",
+    "change_id",
+    "brief_id",
+    "bu_id",
+    "produced_at",
+    "produced_by",
+    "relevance",
+    "priority",
+    "why_relevant",
+    "recommended_actions",
+    "assumptions",
+    "message_quality",
+    "confidence_score",
+    "decisions"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "personalized_brief_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "description": "UUID v4 identifier for this PersonalizedBrief instance."
+    },
+    "change_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "description": "Traces back to the originating ChangeArtifact."
+    },
+    "brief_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "description": "Traces back to the ChangeBrief produced by SignalScribe."
+    },
+    "bu_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*$",
+      "description": "Matches the BU registry ID (e.g., 'immunology', 'oncology'). Stable, lowercase identifier."
+    },
+    "produced_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC timestamp when BUAtlas produced this brief."
+    },
+    "produced_by": {
+      "type": "object",
+      "required": ["agent", "version", "invocation_id"],
+      "additionalProperties": false,
+      "properties": {
+        "agent": {
+          "type": "string",
+          "const": "buatlas"
+        },
+        "version": {
+          "type": "string",
+          "description": "BUAtlas agent version at time of production."
+        },
+        "invocation_id": {
+          "type": "string",
+          "description": "UUID v4 that disambiguates parallel per-BU invocations of BUAtlas for the same change event.",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        }
+      }
+    },
+    "relevance": {
+      "type": "string",
+      "enum": ["affected", "adjacent", "not_affected"],
+      "description": "Gate 4 verdict. 'affected': BU has concrete impact requiring attention or action. 'adjacent': BU is proximate but has no concrete action. 'not_affected': change does not touch this BU."
+    },
+    "priority": {
+      "description": "Notification priority. Null when relevance is not_affected. P0 = urgent/time-critical; P1 = high-importance action required; P2 = awareness/digest.",
+      "oneOf": [
+        { "type": "null" },
+        { "type": "string", "enum": ["P0", "P1", "P2"] }
+      ]
+    },
+    "why_relevant": {
+      "type": "string",
+      "description": "Concrete, BU-specific explanation of why this change matters. Must name a specific mechanism of impact, not a generic observation. Populated when relevance is 'affected'; empty string otherwise."
+    },
+    "recommended_actions": {
+      "type": "array",
+      "description": "Concrete BU-specific actions with identified owners. Empty array when relevance is not_affected or adjacent.",
+      "items": {
+        "type": "object",
+        "required": ["owner", "action"],
+        "additionalProperties": false,
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Role or name of who should take this action (e.g., 'BU head', 'Training lead')."
+          },
+          "action": {
+            "type": "string",
+            "description": "Concrete action description."
+          },
+          "by_when": {
+            "type": ["string", "null"],
+            "description": "Optional deadline or timing hint (e.g., 'Before May 1 rollout', 'Within 2 weeks'). Null when no deadline is specified."
+          }
+        }
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "description": "Explicit assumptions BUAtlas made when assessing relevance or drafting the message. Surfaced for HITL review. Empty array if none.",
+      "items": { "type": "string" }
+    },
+    "message_variants": {
+      "type": ["object", "null"],
+      "description": "Channel-specific message drafts. Required when relevance is 'affected' AND message_quality is 'worth_sending' or 'weak'. Null otherwise. Channel adapters render these into final payloads.",
+      "additionalProperties": false,
+      "properties": {
+        "push_short": {
+          "type": ["string", "null"],
+          "maxLength": 240,
+          "description": "Push notification text. Max 240 characters. Null when this channel variant is not produced."
+        },
+        "teams_medium": {
+          "type": ["string", "null"],
+          "maxLength": 600,
+          "description": "Teams message body. Max ~6 lines / 600 characters. Null when this channel variant is not produced."
+        },
+        "email_long": {
+          "type": ["string", "null"],
+          "maxLength": 1200,
+          "description": "Email body. Max ~200 words (approximately 1200 characters at 6 chars/word average). Null when this channel variant is not produced."
+        }
+      }
+    },
+    "message_quality": {
+      "description": "Gate 5 self-assessment of the drafted message. 'worth_sending': message is specific and actionable. 'weak': message is too generic; triggers regeneration. 'not_worth': change is real but message cannot be made worth the recipient's attention. Null when relevance is not_affected.",
+      "oneOf": [
+        { "type": "null" },
+        { "type": "string", "enum": ["worth_sending", "weak", "not_worth"] }
+      ]
+    },
+    "confidence_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "BUAtlas's aggregate confidence across gates 4 and 5. 0 = no confidence; 1 = fully certain."
+    },
+    "decisions": {
+      "type": "array",
+      "description": "Gate decisions made by BUAtlas (gates 4 and 5) in order. Each entry records the verb, reason, confidence, and agent version.",
+      "items": {
+        "$ref": "https://pulsecraft.abbvie.internal/schemas/decision.schema.json"
+      }
+    },
+    "regeneration_attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of times BUAtlas regenerated the message after a WEAK self-assessment. 0 on first attempt."
+    }
+  }
+}

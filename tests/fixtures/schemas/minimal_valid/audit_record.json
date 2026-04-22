@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+  "timestamp": "2026-04-22T10:04:10Z",
+  "event_type": "agent_invocation",
+  "change_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "actor": {
+    "type": "agent",
+    "id": "signalscribe",
+    "version": "0.1.0"
+  },
+  "action": "completed",
+  "input_hash": "a3f2e1d0c9b8a7f6e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3f2",
+  "output_summary": "gate=1 verb=COMMUNICATE confidence=0.90; gate=2 verb=RIPE confidence=0.88; gate=3 verb=READY confidence=0.87",
+  "decision": {
+    "gate": 1,
+    "verb": "COMMUNICATE",
+    "reason": "Workflow change visible to specialty pharmacy stakeholders."
+  },
+  "metrics": {
+    "token_count_input": 1200,
+    "token_count_output": 850,
+    "cost_usd": 0.0042,
+    "latency_ms": 3200
+  },
+  "outcome": "success"
+}

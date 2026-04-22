@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pulsecraft.abbvie.internal/schemas/bu_profile.schema.json",
+  "title": "BUProfile",
+  "description": "Business Unit configuration. Read-only input to BUAtlas; authored and maintained as versioned YAML in config/ and validated against this schema. This file contains no PII by contract — all 'name' values are display names only, not email addresses or employee IDs.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "bu_id",
+    "name",
+    "head",
+    "owned_product_areas",
+    "preferences",
+    "active_initiatives",
+    "escalation_contact"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "bu_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*$",
+      "description": "Stable lowercase identifier for this BU (e.g., 'immunology', 'oncology', 'neuroscience'). Must be unique across the registry."
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable display name for this BU (e.g., 'Immunology BU', 'Oncology Business Unit')."
+    },
+    "head": {
+      "type": "object",
+      "required": ["name", "role"],
+      "additionalProperties": false,
+      "description": "Primary BU head for notification routing. No contact details — channel adapters resolve those from the directory.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Display name of the BU head. Not an email address."
+        },
+        "role": {
+          "type": "string",
+          "description": "Organizational role title (e.g., 'VP General Manager, Immunology')."
+        },
+        "delegate_ids": {
+          "type": "array",
+          "description": "Opaque recipient IDs of named delegates who can receive or approve on behalf of the BU head.",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "therapeutic_area": {
+      "type": ["string", "null"],
+      "description": "Primary therapeutic area for this BU (e.g., 'immunology', 'neuroscience', 'oncology'). Placeholder field in v1; will align with the official AbbVie BU taxonomy once loaded. Null until taxonomy is loaded."
+    },
+    "owned_product_areas": {
+      "type": "array",
+      "description": "Product area identifiers owned by this BU. Must match the impact_areas vocabulary used in ChangeBriefs. Used by the BU pre-filter and BUAtlas gate 4.",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "preferences": {
+      "type": "object",
+      "required": ["channels", "quiet_hours", "digest_opt_in"],
+      "additionalProperties": false,
+      "properties": {
+        "channels": {
+          "type": "array",
+          "description": "Approved delivery channels for this BU, in preference order.",
+          "items": {
+            "type": "string",
+            "enum": ["teams", "email", "push", "portal_digest", "servicenow"]
+          },
+          "minItems": 1
+        },
+        "quiet_hours": {
+          "type": "object",
+          "required": ["timezone", "start", "end"],
+          "additionalProperties": false,
+          "description": "Quiet hours window during which no push notifications are sent.",
+          "properties": {
+            "timezone": {
+              "type": "string",
+              "description": "IANA timezone identifier (e.g., 'America/Chicago', 'Europe/London')."
+            },
+            "start": {
+              "type": "string",
+              "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+              "description": "Quiet hours start time in HH:MM format (24-hour, local to timezone)."
+            },
+            "end": {
+              "type": "string",
+              "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+              "description": "Quiet hours end time in HH:MM format (24-hour, local to timezone)."
+            }
+          }
+        },
+        "digest_opt_in": {
+          "type": "boolean",
+          "description": "Whether this BU has opted into digest-format notifications for P2 items."
+        },
+        "max_notifications_per_week": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Optional cap on push notifications per week. Null means no cap. Enforced by the rate-limit policy hook."
+        }
+      }
+    },
+    "active_initiatives": {
+      "type": "array",
+      "description": "Freeform descriptions of current BU initiatives. Used by BUAtlas gate 4 to assess contextual relevance ('BU currently cares about X'). Sanitized — no confidential strategy details.",
+      "items": { "type": "string" }
+    },
+    "escalation_contact": {
+      "type": "object",
+      "required": ["name", "role"],
+      "additionalProperties": false,
+      "description": "Human contact for escalated or unresolved items for this BU. No contact details — channel adapters resolve those.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Display name of the escalation contact."
+        },
+        "role": {
+          "type": "string",
+          "description": "Organizational role of the escalation contact."
+        }
+      }
+    },
+    "okrs_current_quarter": {
+      "type": "array",
+      "description": "Summarized, sanitized OKRs for the current quarter. Used by BUAtlas to assess whether a change aligns with current BU priorities. No confidential financial targets.",
+      "items": { "type": "string" }
+    },
+    "historical_notification_feedback_summary": {
+      "type": ["object", "null"],
+      "description": "Aggregate statistics only — no PII. Null until the feedback-loop implementation in a later prompt. Exact shape is TODO. Used by BUAtlas to calibrate message quality expectations.",
+      "additionalProperties": true
+    }
+  }
+}

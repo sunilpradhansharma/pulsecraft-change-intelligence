@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "delivery_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+  "personalized_brief_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+  "change_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "bu_id": "bu-alpha",
+  "recipient_id": "recipient-opaque-001",
+  "recipient_display": {
+    "name": "<display-name>",
+    "role": "BU Head"
+  },
+  "produced_at": "2026-04-22T10:10:00Z",
+  "produced_by": { "agent": "pushpilot", "version": "0.1.0" },
+  "decision": "send_now",
+  "channel": "teams",
+  "scheduled_time": null,
+  "reason": "P1 notification. Recipient within working hours (09:00-17:00 local). No quiet-hours conflict, no rate-limit pressure, no dedupe hit.",
+  "dedupe_key": "a3f2e1d0c9b8a7f6e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3f2",
+  "policy_check": {
+    "passed": true,
+    "violations": [],
+    "reasons": []
+  },
+  "retry_policy": {
+    "max_attempts": 3,
+    "backoff": "exponential",
+    "retry_on": ["transient_error", "timeout"]
+  },
+  "confidence_score": 0.91,
+  "decisions": [
+    {
+      "gate": 6,
+      "verb": "SEND_NOW",
+      "reason": "P1 priority, recipient within working hours, no policy conflicts.",
+      "confidence": 0.91,
+      "decided_at": "2026-04-22T10:09:45Z",
+      "agent": { "name": "pushpilot", "version": "0.1.0" }
+    }
+  ]
+}

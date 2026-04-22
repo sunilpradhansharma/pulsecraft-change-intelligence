@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "brief_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+  "change_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "produced_at": "2026-04-22T10:05:00Z",
+  "produced_by": { "agent": "signalscribe", "version": "0.1.0" },
+  "summary": "Specialty pharmacy order submission now uses a two-pass verification step, replacing the previous single-pass validation.",
+  "before": "Single-pass validation for specialty pharmacy order submissions.",
+  "after": "Two-pass verification step for specialty pharmacy order submissions.",
+  "change_type": "behavior_change",
+  "impact_areas": ["specialty_pharmacy", "order_management"],
+  "affected_segments": ["internal_users", "specialty_pharmacy"],
+  "timeline": {
+    "status": "ripe",
+    "start_date": "2026-05-01"
+  },
+  "required_actions": ["Update field team training materials before May 1"],
+  "risks": ["Temporary increase in submission latency during transition"],
+  "mitigations": ["Phased rollout starting with internal test accounts"],
+  "faq": [
+    {
+      "q": "Does this affect all order types?",
+      "a": "No, only specialty pharmacy orders are affected."
+    }
+  ],
+  "sources": [
+    {
+      "type": "release_note",
+      "ref": "RN-2026-042",
+      "quote": "routes specialty pharmacy orders through an updated verification step"
+    }
+  ],
+  "confidence_score": 0.87,
+  "decisions": [
+    {
+      "gate": 1,
+      "verb": "COMMUNICATE",
+      "reason": "Workflow change visible to internal users and specialty pharmacy stakeholders.",
+      "confidence": 0.9,
+      "decided_at": "2026-04-22T10:04:10Z",
+      "agent": { "name": "signalscribe", "version": "0.1.0" }
+    },
+    {
+      "gate": 2,
+      "verb": "RIPE",
+      "reason": "Rollout scheduled for May 1, within 30-day communication window.",
+      "confidence": 0.88,
+      "decided_at": "2026-04-22T10:04:30Z",
+      "agent": { "name": "signalscribe", "version": "0.1.0" }
+    },
+    {
+      "gate": 3,
+      "verb": "READY",
+      "reason": "Before/after behavior clearly described, timeline confirmed, confidence 0.87.",
+      "confidence": 0.87,
+      "decided_at": "2026-04-22T10:04:50Z",
+      "agent": { "name": "signalscribe", "version": "0.1.0" }
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "bu_id": "bu-alpha",
+  "name": "Alpha Business Unit",
+  "head": {
+    "name": "<display-name>",
+    "role": "VP General Manager"
+  },
+  "owned_product_areas": ["specialty_pharmacy", "order_management"],
+  "preferences": {
+    "channels": ["teams", "email"],
+    "quiet_hours": {
+      "timezone": "America/Chicago",
+      "start": "18:00",
+      "end": "08:00"
+    },
+    "digest_opt_in": true
+  },
+  "active_initiatives": [
+    "Specialty pharmacy access improvement initiative Q2 2026",
+    "Field team digital enablement program"
+  ],
+  "escalation_contact": {
+    "name": "<display-name>",
+    "role": "Chief of Staff"
+  }
+}

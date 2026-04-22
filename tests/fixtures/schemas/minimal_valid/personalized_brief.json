@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "personalized_brief_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+  "change_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "brief_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+  "bu_id": "bu-alpha",
+  "produced_at": "2026-04-22T10:08:00Z",
+  "produced_by": {
+    "agent": "buatlas",
+    "version": "0.1.0",
+    "invocation_id": "d4e5f6a7-b8c9-0123-defa-234567890123"
+  },
+  "relevance": "affected",
+  "priority": "P1",
+  "why_relevant": "Bu-alpha owns the specialty pharmacy product area; field teams will need to prepare for the new submission flow before May 1.",
+  "recommended_actions": [
+    {
+      "owner": "BU head",
+      "action": "Assign training update to field operations lead",
+      "by_when": "Before May 1 rollout"
+    }
+  ],
+  "assumptions": [
+    "Bu-alpha field teams currently use the specialty pharmacy order submission workflow."
+  ],
+  "message_variants": {
+    "push_short": "Specialty pharmacy order flow updated May 1. Training update needed.",
+    "teams_medium": "**Action needed by May 1:** The specialty pharmacy order submission workflow is adding a two-pass verification step. Your field teams will need updated training materials before the rollout.",
+    "email_long": "Dear <display-name>,\n\nStarting May 1, the specialty pharmacy order submission workflow will use a new two-pass verification step, replacing the previous single-pass validation.\n\nWhat this means for your team: Field representatives submitting specialty pharmacy orders will encounter an additional verification screen. Training materials should be updated before rollout.\n\nRecommended action: Assign your field operations lead to update training materials by April 28.\n\nQuestions? Reply to this message or contact the Change Intelligence team."
+  },
+  "message_quality": "worth_sending",
+  "confidence_score": 0.83,
+  "decisions": [
+    {
+      "gate": 4,
+      "verb": "AFFECTED",
+      "reason": "Bu-alpha owns specialty pharmacy product area and field teams execute the order submission workflow that is changing.",
+      "confidence": 0.85,
+      "decided_at": "2026-04-22T10:07:20Z",
+      "agent": { "name": "buatlas", "version": "0.1.0" }
+    },
+    {
+      "gate": 5,
+      "verb": "WORTH_SENDING",
+      "reason": "Message names specific BU consequence (field rep training), concrete action identified with owner and deadline.",
+      "confidence": 0.83,
+      "decided_at": "2026-04-22T10:07:50Z",
+      "agent": { "name": "buatlas", "version": "0.1.0" }
+    }
+  ]
+}

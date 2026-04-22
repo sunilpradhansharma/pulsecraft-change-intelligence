@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pulsecraft.abbvie.internal/schemas/change_artifact.schema.json",
+  "title": "ChangeArtifact",
+  "description": "A normalized change artifact — the output of the ingest adapters, input to SignalScribe. Same shape regardless of source type (release note, Jira ticket, doc, feature flag, incident). All content has been redacted of PII, PHI, and secrets by the ingest hook before this schema is populated.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "change_id",
+    "source_type",
+    "source_ref",
+    "ingested_at",
+    "title",
+    "raw_text"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Schema version. Must be '1.0' for this schema."
+    },
+    "change_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "description": "UUID v4 identifier for this change event. Generated at ingest time. Stable across replays and all downstream contracts."
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "release_note",
+        "jira_work_item",
+        "ado_work_item",
+        "doc",
+        "feature_flag",
+        "incident"
+      ],
+      "description": "Type of the originating source artifact."
+    },
+    "source_ref": {
+      "type": "string",
+      "description": "Opaque identifier from the source system (e.g., Jira issue key, ADO work item ID). Must not include URLs with embedded credentials or secrets."
+    },
+    "ingested_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC timestamp when this artifact was ingested. Example: 2026-04-22T12:34:56Z"
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Display title of the change. Redacted of PII/PHI/secrets."
+    },
+    "raw_text": {
+      "type": "string",
+      "description": "Redacted full text of the change artifact. The ingest hook MUST remove all PII, PHI, credentials, and secrets before populating this field. No raw source content with sensitive data should appear here."
+    },
+    "author": {
+      "type": ["object", "null"],
+      "description": "Optional author attribution. Contains display name only — no email addresses or system identifiers. Null when no author attribution is available.",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Author display name. Must not be an email address or employee ID."
+        },
+        "role": {
+          "type": "string",
+          "description": "Author's organizational role (e.g., 'Product Manager', 'Engineering Lead')."
+        }
+      }
+    },
+    "related_refs": {
+      "type": "array",
+      "description": "References to related artifacts in the same or other source systems.",
+      "items": {
+        "type": "object",
+        "required": ["type", "ref", "relation"],
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "release_note",
+              "jira_work_item",
+              "ado_work_item",
+              "doc",
+              "feature_flag",
+              "incident"
+            ]
+          },
+          "ref": {
+            "type": "string",
+            "description": "Opaque reference identifier in the source system."
+          },
+          "relation": {
+            "type": "string",
+            "enum": ["parent", "child", "referenced-by", "references"]
+          }
+        }
+      }
+    },
+    "links": {
+      "type": "array",
+      "description": "Opaque internal URIs to related resources. Must not include query-string secrets, tokens, or credentials.",
+      "items": { "type": "string" }
+    },
+    "labels": {
+      "type": "array",
+      "description": "Structured tags from the source system (e.g., 'customer-impacting', 'gxp-adjacent', 'experiment').",
+      "items": { "type": "string" }
+    },
+    "rollout_hints": {
+      "type": ["object", "null"],
+      "description": "Optional rollout metadata extracted from the source artifact. Null when no rollout information is available.",
+      "additionalProperties": false,
+      "properties": {
+        "start_date": {
+          "type": "string",
+          "format": "date",
+          "description": "ISO-8601 date when rollout is scheduled to begin."
+        },
+        "ramp": {
+          "type": "string",
+          "description": "Free-text description of the rollout ramp (e.g., '1% internal → 10% → GA over 30 days')."
+        },
+        "target_population": {
+          "type": "string",
+          "description": "Free-text description of the target user population (e.g., 'US region HCP portal users')."
+        }
+      }
+    }
+  }
+}

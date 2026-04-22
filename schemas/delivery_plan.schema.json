@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pulsecraft.abbvie.internal/schemas/delivery_plan.schema.json",
+  "title": "DeliveryPlan",
+  "description": "PushPilot's gate 6 delivery decision plus deterministic delivery metadata. Consumed by delivery adapters. The agent decides the verb and reason; deterministic code enforces policy invariants (quiet hours, rate limits, dedupe) and may override the agent decision toward a more conservative outcome, logging the override as a separate audit record.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "delivery_id",
+    "personalized_brief_id",
+    "change_id",
+    "bu_id",
+    "recipient_id",
+    "recipient_display",
+    "produced_at",
+    "produced_by",
+    "decision",
+    "channel",
+    "scheduled_time",
+    "reason",
+    "dedupe_key",
+    "policy_check",
+    "retry_policy",
+    "confidence_score",
+    "decisions"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "delivery_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "description": "UUID v4 identifier for this delivery plan instance."
+    },
+    "personalized_brief_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "description": "Traces back to the PersonalizedBrief that this plan delivers."
+    },
+    "change_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "description": "Traces back to the originating ChangeArtifact."
+    },
+    "bu_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*$",
+      "description": "BU registry ID for the target BU."
+    },
+    "recipient_id": {
+      "type": "string",
+      "description": "Opaque identifier for the BU head or delegate. Used for dedupe-key generation and recipient preference lookup. Must not be an email address or phone number — channel adapters resolve contact details separately."
+    },
+    "recipient_display": {
+      "type": "object",
+      "required": ["name", "role"],
+      "additionalProperties": false,
+      "description": "Display-name attribution for the recipient. Contains no contact details (no email, phone, or employee ID).",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Recipient display name only."
+        },
+        "role": {
+          "type": "string",
+          "description": "Recipient's organizational role (e.g., 'BU Head', 'VP Commercial Operations')."
+        }
+      }
+    },
+    "produced_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC timestamp when PushPilot produced this plan."
+    },
+    "produced_by": {
+      "type": "object",
+      "required": ["agent", "version"],
+      "additionalProperties": false,
+      "properties": {
+        "agent": {
+          "type": "string",
+          "const": "pushpilot"
+        },
+        "version": {
+          "type": "string",
+          "description": "PushPilot agent version at time of production."
+        }
+      }
+    },
+    "decision": {
+      "type": "string",
+      "enum": ["send_now", "hold_until", "digest", "escalate"],
+      "description": "Gate 6 delivery decision. 'send_now': deliver immediately. 'hold_until': defer to scheduled_time. 'digest': bundle into the next digest run. 'escalate': route to HITL queue."
+    },
+    "channel": {
+      "description": "Target delivery channel. Null when decision is 'escalate' (channel unresolved) or 'hold_until' pending further decision.",
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "string",
+          "enum": ["teams", "email", "push", "portal_digest", "servicenow"]
+        }
+      ]
+    },
+    "scheduled_time": {
+      "description": "ISO-8601 UTC time to deliver. Null when decision is 'send_now' (deliver immediately) or 'escalate'.",
+      "oneOf": [
+        { "type": "null" },
+        { "type": "string", "format": "date-time" }
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "description": "Required plain-English explanation of the gate 6 decision. Must name specific signals (e.g., 'Recipient in quiet hours until 08:00; holding until window opens'). Must not contain PII or internal secrets."
+    },
+    "dedupe_key": {
+      "type": "string",
+      "description": "Deterministic deduplication key. Generated as: SHA-256 of (change_id + bu_id + recipient_id + message_variant_id), where message_variant_id is a stable SHA-256 of the chosen message variant content. Keys are stable across replays of the same logical notification. Used to prevent duplicate deliveries."
+    },
+    "policy_check": {
+      "type": "object",
+      "required": ["passed"],
+      "additionalProperties": false,
+      "description": "Result of the pre-delivery policy check executed by deterministic code (not the agent).",
+      "properties": {
+        "passed": {
+          "type": "boolean",
+          "description": "True if all policy checks passed. False if any violation was detected."
+        },
+        "violations": {
+          "type": "array",
+          "description": "Specific policy violations detected. Empty or absent when passed is true.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "quiet_hours",
+              "rate_limit",
+              "unapproved_channel",
+              "restricted_terms",
+              "mlr_sensitive",
+              "dedupe_conflict"
+            ]
+          }
+        },
+        "reasons": {
+          "type": "array",
+          "description": "Human-readable explanations for each violation. Must not contain PII.",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "retry_policy": {
+      "type": "object",
+      "required": ["max_attempts", "backoff", "retry_on"],
+      "additionalProperties": false,
+      "properties": {
+        "max_attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Maximum delivery attempts including the first."
+        },
+        "backoff": {
+          "type": "string",
+          "enum": ["exponential", "fixed", "none"],
+          "description": "Backoff strategy between retry attempts."
+        },
+        "retry_on": {
+          "type": "array",
+          "description": "Error conditions that trigger a retry.",
+          "items": {
+            "type": "string",
+            "enum": ["transient_error", "rate_limit", "timeout"]
+          }
+        }
+      }
+    },
+    "confidence_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "PushPilot's confidence in the gate 6 decision. 0 = no confidence; 1 = fully certain."
+    },
+    "decisions": {
+      "type": "array",
+      "description": "Gate 6 decision made by PushPilot. Typically one entry per delivery plan.",
+      "items": {
+        "$ref": "https://pulsecraft.abbvie.internal/schemas/decision.schema.json"
+      }
+    }
+  }
+}

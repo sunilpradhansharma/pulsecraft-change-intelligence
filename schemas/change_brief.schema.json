@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pulsecraft.abbvie.internal/schemas/change_brief.schema.json",
+  "title": "ChangeBrief",
+  "description": "SignalScribe's structured interpretation of a ChangeArtifact, including gate 1-3 decisions. Produced by the SignalScribe agent; consumed by the orchestrator which fans it out to BUAtlas per candidate BU.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "brief_id",
+    "change_id",
+    "produced_at",
+    "produced_by",
+    "summary",
+    "before",
+    "after",
+    "change_type",
+    "impact_areas",
+    "affected_segments",
+    "timeline",
+    "required_actions",
+    "risks",
+    "mitigations",
+    "faq",
+    "sources",
+    "confidence_score",
+    "decisions"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "brief_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "description": "UUID v4 identifier for this ChangeBrief. Distinct from change_id; one change_id may produce one brief_id (currently 1:1 in v1)."
+    },
+    "change_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "description": "Matches the ChangeArtifact's change_id. Enables traceability back to the originating artifact."
+    },
+    "produced_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC timestamp when SignalScribe produced this brief."
+    },
+    "produced_by": {
+      "type": "object",
+      "required": ["agent", "version"],
+      "additionalProperties": false,
+      "properties": {
+        "agent": {
+          "type": "string",
+          "const": "signalscribe"
+        },
+        "version": {
+          "type": "string",
+          "description": "SignalScribe agent version at time of production."
+        }
+      }
+    },
+    "summary": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "1-2 sentence plain-English summary of the change, suitable for a busy BU head to scan in 5 seconds."
+    },
+    "before": {
+      "type": "string",
+      "description": "Description of the prior state before this change. Use 'unknown' if genuinely unknown."
+    },
+    "after": {
+      "type": "string",
+      "description": "Description of the new state after this change."
+    },
+    "change_type": {
+      "type": "string",
+      "enum": [
+        "bugfix",
+        "behavior_change",
+        "new_feature",
+        "deprecation",
+        "rollback",
+        "configuration_change"
+      ]
+    },
+    "impact_areas": {
+      "type": "array",
+      "description": "Functional areas impacted by this change. Freeform strings in v1; will align with BU registry taxonomy in a later release.",
+      "items": { "type": "string" }
+    },
+    "affected_segments": {
+      "type": "array",
+      "description": "User or stakeholder segments affected (e.g., 'internal_users', 'hcp_portal', 'specialty_pharmacy').",
+      "items": { "type": "string" }
+    },
+    "timeline": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["ripe", "held_until", "held_indefinite", "already_shipped"],
+          "description": "Gate 2 verdict on timing. 'ripe' means ready to communicate now. 'held_until' means wait until a specified date. 'held_indefinite' means hold until a trigger fires. 'already_shipped' means change has gone out without prior communication."
+        },
+        "start_date": {
+          "type": ["string", "null"],
+          "format": "date",
+          "description": "ISO-8601 date when rollout begins or began. Null when not yet known."
+        },
+        "ramp": {
+          "type": ["string", "null"],
+          "description": "Rollout ramp description extracted from the artifact. Null when not specified."
+        },
+        "reevaluate_at": {
+          "type": ["string", "null"],
+          "format": "date",
+          "description": "ISO-8601 date to re-evaluate this brief for ripeness. Null when not held."
+        },
+        "reevaluate_trigger": {
+          "type": ["string", "null"],
+          "description": "Human-readable description of the event that should trigger re-evaluation. Null when not held."
+        }
+      }
+    },
+    "required_actions": {
+      "type": "array",
+      "description": "Concrete actions required of BU stakeholders. Empty array if none.",
+      "items": { "type": "string" }
+    },
+    "risks": {
+      "type": "array",
+      "description": "Identified risks associated with this change. Empty array if none.",
+      "items": { "type": "string" }
+    },
+    "mitigations": {
+      "type": "array",
+      "description": "Known mitigations for the identified risks. Empty array if none.",
+      "items": { "type": "string" }
+    },
+    "faq": {
+      "type": "array",
+      "description": "Anticipated questions and answers. Empty array if none.",
+      "items": {
+        "type": "object",
+        "required": ["q", "a"],
+        "additionalProperties": false,
+        "properties": {
+          "q": { "type": "string" },
+          "a": { "type": "string" }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "description": "Source citations supporting claims in this brief. Each citation traces a claim to a specific artifact passage.",
+      "items": {
+        "type": "object",
+        "required": ["type", "ref", "quote"],
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "release_note",
+              "jira_work_item",
+              "ado_work_item",
+              "doc",
+              "feature_flag",
+              "incident"
+            ]
+          },
+          "ref": {
+            "type": "string",
+            "description": "Opaque source system reference identifier."
+          },
+          "quote": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Short verbatim snippet from the source artifact supporting the claim. Must not contain PII, PHI, or secrets."
+          }
+        }
+      }
+    },
+    "confidence_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "SignalScribe's aggregate confidence in the brief as a whole. 0 = no confidence; 1 = fully certain. See decision criteria for threshold semantics."
+    },
+    "decisions": {
+      "type": "array",
+      "description": "Gate decisions made by SignalScribe (gates 1, 2, 3) in the order they were made. Each entry records the verb, reason, confidence, and agent version.",
+      "items": {
+        "$ref": "https://pulsecraft.abbvie.internal/schemas/decision.schema.json"
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "description": "Specific, answerable questions for human review. Populated when gate 3 returns NEED_CLARIFICATION. Aim for ≤3 sharp questions.",
+      "items": { "type": "string" }
+    },
+    "escalation_reason": {
+      "type": ["string", "null"],
+      "description": "Human-readable reason for escalation. Populated when any gate returns ESCALATE. Null otherwise. Must not contain PII or internal secrets."
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "change_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "source_type": "release_note",
+  "source_ref": "RN-2026-042",
+  "ingested_at": "2026-04-22T10:00:00Z",
+  "title": "Order submission workflow updated for specialty pharmacy routing",
+  "raw_text": "The order submission flow now routes specialty pharmacy orders through an updated verification step. Previous behavior used a single-pass validation; new behavior uses a two-pass check. No PII in this artifact."
+}
