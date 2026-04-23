@@ -217,7 +217,7 @@ All implementation happens via prompts in `/prompts/`, run one at a time in Clau
 | 12 | `prompts/12-hooks.md` | Guardrail hooks in settings.json | ✅ Done |
 | 13 | `prompts/13-dryrun-walkthrough.md` | First end-to-end dryrun | ✅ Done |
 | 14 | `prompts/14-eval-harness.md` | Fixture-based evals | ✅ Done |
-| 14.5 | `prompts/14.5-readme-overhaul.md` | README overhaul — publication-quality documentation | ✅ Done |
+| 14.5 | `prompts/14.5-readme-overhaul.md` | README overhaul — 625-line publication-quality README with Mermaid diagram | ✅ Done |
 | 14.6 | `prompts/14.6-remove-abbvie.md` | Remove org-specific identifiers — repo reads as generic enterprise project | ✅ Done |
 
 ---
