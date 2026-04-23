@@ -9,9 +9,9 @@
 
 **Phase:** Active implementation — schemas and config complete, agent authoring next.
 
-**Last completed:** Prompt 12 (guardrail hooks — pre_ingest, post_agent, pre_deliver, audit_hook; HookContext/HookResult; config loader from .claude/settings.json; 5 engine lifecycle call sites; 43 new tests; 600 tests passing).
+**Last completed:** Prompt 13 (first end-to-end dryrun — all 8 fixtures with real agents; 2 bugs found and fixed in post_agent routing-verb semantics; dryrun report at design/dryrun/2026-04-23-dryrun-report.md; 606 tests passing).
 
-Planning phases P0–P2 are complete. The prompt-driven build sequence is at prompt 12. Prompt 13 (first end-to-end dryrun) is next.
+Planning phases P0–P2 are complete. The prompt-driven build sequence is at prompt 13. Prompt 14 (eval harness) is next.
 
 ---
 
@@ -28,7 +28,7 @@ Planning phases P0–P2 are complete. The prompt-driven build sequence is at pro
 | **P6 — Skills** | Skill definitions and implementations | ⏳ Prompts 08–10 |
 | **P7 — Commands** | Slash command prompts | ✅ Done (prompt 11) |
 | **P8 — Hooks** | Hook definitions + policy enforcement | ✅ Done (prompt 12) |
-| **P9 — Dryrun + Evals** | First end-to-end dryrun, eval harness | ⏳ Prompts 13–14 |
+| **P9 — Dryrun + Evals** | First end-to-end dryrun, eval harness | ⏳ Prompts 13–14 (13 done) |
 
 ---
 
@@ -121,6 +121,14 @@ Planning phases P0–P2 are complete. The prompt-driven build sequence is at pro
 | 83 | usd_estimate on agent output schemas | `src/pulsecraft/schemas/change_brief.py`, `personalized_brief.py`, `push_pilot_output.py` | 11.5 | Internal cost field (exclude=True, not in JSON schema) |
 | 84 | Cost wiring: agents → engine → audit | `agents/*.py`, `orchestrator/engine.py` | 11.5 | Agents set .usd_estimate; engine passes AuditMetrics(cost_usd=...) to audit |
 | 85 | detect_runs unit tests | `tests/unit/skills/test_detect_runs.py` | 11.5 | 12 tests for run detection and run-scoped build_explanation |
+| 86 | Hook modules | `src/pulsecraft/hooks/pre_ingest.py`, `post_agent.py`, `pre_deliver.py`, `audit_hook.py`, `base.py`, `config.py` | 12 | 4 guardrail hooks + HookContext/HookResult base + settings.json loader |
+| 87 | Hook registrations | `.claude/settings.json` | 12 | 4 hooks registered: pre_ingest (closed), post_agent (closed), pre_deliver (closed), audit (open) |
+| 88 | Hook engine wiring | `src/pulsecraft/orchestrator/engine.py` | 12 | 5 lifecycle call sites; _invoke_hook; _write_hook_fired; lazy module loading |
+| 89 | Hook unit tests | `tests/unit/hooks/` (5 test files) | 12 | 43 new tests: pre_ingest, post_agent, pre_deliver, audit_hook, config loader |
+| 90 | Hook integration tests | `tests/integration/hooks/test_hooks_in_pipeline.py` | 12 | 6 pipeline-level hook tests via monkeypatched registrations |
+| 91 | post_agent routing-verb fix | `src/pulsecraft/hooks/post_agent.py` | 13 | Skip confidence checks when any decision is a routing verb (ESCALATE, NEED_CLARIFICATION, UNRESOLVABLE, ARCHIVE, HOLD_INDEFINITE) |
+| 92 | post_agent routing-verb regression tests | `tests/unit/hooks/test_post_agent.py` | 13 | 5 new tests for routing-verb skip semantics; 1 test for COMMUNICATE+HOLD_INDEFINITE mix |
+| 93 | Dryrun report | `design/dryrun/2026-04-23-dryrun-report.md` | 13 | 8-fixture dryrun with real agents; findings, hook summary, /explain outputs, open questions |
 
 ---
 
@@ -154,7 +162,7 @@ Planning phases P0–P2 are complete. The prompt-driven build sequence is at pro
 | O7 | Skill inventory — final list and per-skill prompts | Prompts 08–10 |
 | O8 | Slash command contracts | Prompt 11 |
 | O9 | Hook invocation points and exact rules | Prompt 12 |
-| O10 | Fixture set for first dryrun | Prompt 13 (uses fixtures from prompt 03) |
+| ~~O10~~ | ~~Fixture set for first dryrun~~ | ✅ Resolved — prompt 13, all 8 fixtures from prompt 03 used |
 
 ---
 

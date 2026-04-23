@@ -37,9 +37,9 @@
 - ✅ 11 — Operator slash commands (11 subcommands incl. /explain decision trail, CLI refactor, explain_chain skill, 545 tests)
 - ✅ 11.5 — Explain scoping fix: /explain scoped to latest run by default, run-boundary detection, --run/--all/--list-runs flags, cost wired to audit records, 557 tests
 - ✅ 12 — Guardrail hooks: pre_ingest, post_agent, pre_deliver, audit_hook; HookContext/HookResult base types; config loader; 5 engine lifecycle call sites; 43 new tests (600 total)
+- ✅ 13 — First end-to-end dryrun: all 8 fixtures with real agents, 2 bugs fixed (HOLD_INDEFINITE routing verb; mixed-decision confidence semantics), dryrun report in design/dryrun/, 606 tests
 
 **Prompts remaining:**
-- ⏳ 13 — First end-to-end dryrun
 - ⏳ 14 — Eval harness
 
 ## Where to find context
@@ -312,6 +312,17 @@ Uses default mock agents. Prints Rich tables: state-transition audit chain, BU r
 - **BU not in candidate set** → the mock `impact_areas` don't overlap with any BU's `owned_product_areas`. Check `config/bu_registry.yaml` and the mock's default `impact_areas`.
 - **HITL reason mismatch** → explicit agent decisions (ESCALATE, HOLD, etc.) must be checked *before* the confidence threshold check. See `engine.py:_run()` step 2.
 
+## Dryrun artifacts (prompt 13)
+
+Report: `design/dryrun/2026-04-23-dryrun-report.md`
+
+All 8 fixtures ran with real agents (claude-sonnet-4-6). Two bugs were found and fixed:
+
+1. **`HOLD_INDEFINITE` missing from `_ROUTING_VERBS`** (`post_agent.py`) — routing decisions must not trigger confidence checks.
+2. **Mixed decision set `[COMMUNICATE, HOLD_INDEFINITE]` still failed** — fix: if ANY decision in the set is a routing verb, skip ALL confidence checks. The routing decision is itself the safeguard.
+
+Key observation: `post_agent` confidence checks should only fire when the agent is on the positive commit path (all decisions are actionable verbs). If the agent self-routes, the confidence of earlier gates is irrelevant.
+
 ## Common failure modes and fixes
 
 - **`ModuleNotFoundError: No module named 'pulsecraft'`** → you're running system `pytest` instead of venv. Use `.venv/bin/pytest`.
@@ -341,5 +352,5 @@ Uses default mock agents. Prints Rich tables: state-transition audit chain, BU r
 
 ---
 
-*Last updated: prompt 12 (guardrail hooks — pre_ingest, post_agent, pre_deliver, audit_hook; HookContext/HookResult; config loader; 5 engine lifecycle call sites; 43 new tests; 600 tests passing).*
-*Next prompt: 13 — First end-to-end dryrun.*
+*Last updated: prompt 13 (first end-to-end dryrun — all 8 fixtures with real agents; 2 bugs fixed in post_agent routing-verb semantics; dryrun report at design/dryrun/2026-04-23-dryrun-report.md; 606 tests passing).*
+*Next prompt: 14 — Eval harness.*
