@@ -30,7 +30,7 @@ No LLM calls. No real external systems. No credentials required at runtime. Stub
 2. **`schemas/change_artifact.schema.json`** — JSON schema for validation
 3. **`fixtures/changes/`** — look at the shape of each existing fixture; new adapters must produce artifacts that match this shape
 4. **`src/pulsecraft/cli/main.py`** — current CLI structure (single Typer command); needs restructuring
-5. **`CLAUDE.md`** — standing orders; pay attention to the no-real-AbbVie-data rule (applies to adapters too — use stub URLs like `https://example.invalid/rn/<id>`, not real endpoints)
+5. **`CLAUDE.md`** — standing orders; pay attention to the no-real-enterprise-data rule (applies to adapters too — use stub URLs like `https://example.invalid/rn/<id>`, not real endpoints)
 6. **`design/planning/01-decision-criteria.md`** — just skim; not critical for this prompt but worth re-acquainting
 
 ## What "done" looks like
@@ -63,7 +63,7 @@ When you finish:
 3. **Adapters are pure functions where possible.** `fetch(source_ref: str, transport=None) -> ChangeArtifact`. No side effects beyond HTTP (or stub read). No global state.
 4. **Errors are typed.** Three exception classes: `IngestNotFound` (404-equivalent), `IngestUnauthorized` (401/403 — flag for credentials later), `IngestMalformed` (response didn't match expected shape). Orchestrator will eventually handle these; for now just raise cleanly.
 5. **Redaction at the boundary.** Every adapter passes its raw content through a redaction function before building the `raw_text`. V1 redactor is simple — regex-based scrub of patterns like `DOB:`, `MRN:`, `SSN:`, `API_KEY`, `password=`. Same list as `policy.yaml` → `restricted_terms.sensitive_data_markers`. Reuse if possible.
-6. **No AbbVie-specific identifiers.** All stub fixtures use generic IDs (`RN-2026-042`, `JIRA-ALPHA-1234`, `DOC-42`, `FLAG-99`, `INC-2026-001`). Stub URLs use `https://example.invalid/`.
+6. **No enterprise-specific identifiers.** All stub fixtures use generic IDs (`RN-2026-042`, `JIRA-ALPHA-1234`, `DOC-42`, `FLAG-99`, `INC-2026-001`). Stub URLs use `https://example.invalid/`.
 7. **CLI conversion is surgical.** Don't rewrite the CLI. Restructure the existing command to be `run-change`, add `ingest` as a sibling, keep all existing `--real-signalscribe` etc. flags working on `run-change`. Tests that shell out to the CLI must be updated.
 
 ## Step-by-step work
@@ -338,7 +338,7 @@ Do not push to remote unless the user asks.
 ## Rules for this session
 
 - **No LLM calls. No real external services.** If tempted to call an API, stop — this is pure plumbing.
-- **No real AbbVie identifiers.** All stubs use generic IDs and `example.invalid` hostnames.
+- **No real enterprise identifiers.** All stubs use generic IDs and `example.invalid` hostnames.
 - **No schema changes.** If a field seems missing from `ChangeArtifact`, adjust adapter logic, not the schema.
 - **Surgical CLI changes.** Don't rewrite; convert to command group. Existing behavior of `run-change` preserved exactly.
 - **Update all tests that shell out to `pulsecraft <fixture>`.** They need the new `run-change` subcommand.

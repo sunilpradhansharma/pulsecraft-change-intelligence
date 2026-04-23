@@ -93,7 +93,7 @@ Stage only the new design files and commit with:
 docs: add P0-P2 planning artifacts (problem, ADRs, decision criteria, architecture)
 
 - design/README.md — master architecture explainer for the repo
-- design/00-problem-statement.md — AbbVie-contextualized problem framing, scope, assumptions, risks
+- design/00-problem-statement.md — enterprise-contextualized problem framing, scope, assumptions, risks
 - design/adr/ADR-001-workflow-with-subagents.md — pattern decision
 - design/adr/ADR-002-subagent-topology.md — fan-out, tool scoping, component-to-primitive map
 - design/planning/00-planning-index.md — phase tracker and artifact registry
@@ -134,7 +134,7 @@ At the end of the session, produce a short report covering:
 
 > **From release notes to BU-ready actions — automatically.**
 >
-> PulseCraft is an internal GenAI service that turns marketplace product/feature changes into timely, BU-relevant, actionable notifications for BU leadership at AbbVie. It is implemented as a team of three specialist AI agents, each a decision-maker at one or more gates in the change-communication workflow.
+> PulseCraft is an internal GenAI service that turns marketplace product/feature changes into timely, BU-relevant, actionable notifications for BU leadership at the organization. It is implemented as a team of three specialist AI agents, each a decision-maker at one or more gates in the change-communication workflow.
 
 ---
 
@@ -153,7 +153,7 @@ See [`planning/00-planning-index.md`](planning/00-planning-index.md) for the cur
 
 ## What PulseCraft does
 
-BU leaders at AbbVie currently learn about marketplace product/feature changes too late, inconsistently, and with poor signal-to-noise. PulseCraft solves this by ingesting change artifacts, interpreting them, mapping impact to BUs, drafting personalized messages, and delivering (or queueing for approval) via enterprise-approved channels — with full auditability.
+BU leaders at the organization currently learn about marketplace product/feature changes too late, inconsistently, and with poor signal-to-noise. PulseCraft solves this by ingesting change artifacts, interpreting them, mapping impact to BUs, drafting personalized messages, and delivering (or queueing for approval) via enterprise-approved channels — with full auditability.
 
 **Primary job-to-be-done:** *"When a marketplace feature changes, I (BU head) find out on time, in context, with a clear action — and nothing irrelevant."*
 
@@ -207,7 +207,7 @@ Each agent's judgment is defined in detail in [`planning/01-decision-criteria.md
 
 ## Sponsor
 
-**Head of AI, AbbVie.**
+**Head of AI.**
 ```
 
 ## Appendix B — `design/00-problem-statement.md`
@@ -223,7 +223,7 @@ Each agent's judgment is defined in detail in [`planning/01-decision-criteria.md
 
 Assumption tags used throughout this document:
 - `[A]` — **Assumption** carried forward for design purposes; must be validated in Track A discovery before freeze.
-- `[I]` — **Industry-typical** reference (pharma / life-sciences norm). Not a claim about AbbVie's actual internal state.
+- `[I]` — **Industry-typical** reference (pharma / life-sciences norm). Not a claim about the organization's actual internal state.
 - `[TBD]` — **To be determined** by the identified owner.
 
 ---
@@ -238,13 +238,13 @@ The initiative is sponsored by the **Head of AI** as a capability-building progr
 
 ### 2.1 The observed problem
 
-BU leaders at AbbVie `[A]` currently learn about marketplace product/feature changes **too late, inconsistently, and with poor signal-to-noise.** Some receive a firehose of release notes irrelevant to their BU; others miss changes that materially affect their team's workflows or customer experience. Downstream BU teams react instead of prepare, creating avoidable churn during rollouts.
+BU leaders at the organization `[A]` currently learn about marketplace product/feature changes **too late, inconsistently, and with poor signal-to-noise.** Some receive a firehose of release notes irrelevant to their BU; others miss changes that materially affect their team's workflows or customer experience. Downstream BU teams react instead of prepare, creating avoidable churn during rollouts.
 
 ### 2.2 Why now
 
 - GenAI maturity has reached the point where structured interpretation of unstructured change artifacts is reliable enough for enterprise use, *provided* the system is architected with appropriate guardrails and human-in-the-loop controls. `[I]`
 - The Head of AI sponsorship creates top-cover for establishing an agent-based pattern that can be reused beyond this initiative.
-- No existing AbbVie GenAI reference architecture or agent-framework standard has been identified `[A-Q3]`; PulseCraft will likely set precedent, which raises the quality bar on its design artifacts.
+- No existing the organization GenAI reference architecture or agent-framework standard has been identified `[A-Q3]`; PulseCraft will likely set precedent, which raises the quality bar on its design artifacts.
 
 ### 2.3 What "marketplace" means here
 
@@ -306,12 +306,12 @@ Decomposed:
 - **21 CFR Part 11:** not in scope for v1; architecture preserves option value for later validation if scope expands.
 - **HIPAA / PHI:** no PHI shall enter or persist in PulseCraft. Redaction hook at ingest boundary.
 - **MLR review:** any drafted message whose content could be construed as scientific communication is routed to MLR queue before delivery.
-- **Data residency:** enterprise tenancy; no data egress outside AbbVie-approved cloud boundaries.
+- **Data residency:** enterprise tenancy; no data egress outside enterprise-approved cloud boundaries.
 
 ### 6.2 Data handling
 
 - No customer data, patient data, adverse-event data, or HCP-identifying data in any PulseCraft artifact.
-- No AbbVie-internal secrets, credentials, or security details in drafted messages.
+- No internal secrets, credentials, or security details in drafted messages.
 - Source artifacts may reference such data; ingest hook must redact before interpretation.
 - Audit logs retained per enterprise retention policy `[TBD]`.
 
@@ -370,7 +370,7 @@ Contracts, schemas, and queue boundaries are shaped to scale to the headroom col
 |---|---|---|---|---|
 | A-Q1 | Sponsor scope = "marketplace notifications for BU heads" as described | Rescope; unlikely to invalidate pattern | Sponsor alignment conversation | Oṁ |
 | A-Q2 | "Marketplace" refers to a single, identifiable product surface | Increases scope; may require multiple registries | Sponsor + product-org conversation | Oṁ + Sponsor org |
-| A-Q3 | No existing AbbVie GenAI reference architecture to conform to | If one exists, may require rework of ADR-001/002 | Direct check with EA, InfoSec, AI governance body | Oṁ |
+| A-Q3 | No existing the organization GenAI reference architecture to conform to | If one exists, may require rework of ADR-001/002 | Direct check with EA, InfoSec, AI governance body | Oṁ |
 | A-Q4 | LLM runtime selection is in-scope for this project | If pre-decided, accelerates runtime decision | EA / CloudOps conversation | Oṁ |
 | A-Q5 | v1 explicitly non-GxP | If v1 is GxP-adjacent, validation posture rewrites cost/timeline | Legal / Compliance review | Sponsor → Legal |
 | A-Q6 | Willing pilot BU is identifiable within sponsor's network | If not, pilot delayed | Sponsor office introduction | Oṁ + Sponsor |
@@ -399,7 +399,7 @@ Before v1 go-live, the following must be resolved:
 1. **Scope confirmation** from sponsor: marketplace definition, target outcome, v1 boundaries.
 2. **Validation posture decision** from Legal / Compliance.
 3. **LLM runtime decision** from EA / CloudOps.
-4. **GenAI governance alignment** — confirmation that no existing AbbVie standard must be conformed to.
+4. **GenAI governance alignment** — confirmation that no existing the organization standard must be conformed to.
 5. **Pilot BU identification** — named co-sponsor willing to partner.
 6. **Data handling sign-off** by InfoSec / Privacy.
 
@@ -407,7 +407,7 @@ Before v1 go-live, the following must be resolved:
 
 | Version | Author | Summary |
 |---|---|---|
-| v1 | Oṁ | First full Problem Statement with AbbVie context, assumption tags, risk register |
+| v1 | Oṁ | First full Problem Statement with the organization context, assumption tags, risk register |
 ```
 
 ## Appendix C — `design/adr/ADR-001-workflow-with-subagents.md`
@@ -465,7 +465,7 @@ Detailed subagent topology, tool scoping, and fan-out mechanics are covered in *
 
 A peer-agent team — three LLM agents communicating to reach consensus — would add coordination overhead, nondeterminism, and debugging difficulty without buying flexibility the problem actually needs. Peer-agent patterns shine when the division of labor itself is dynamic. PulseCraft's decomposition into "understand → personalize → deliver" does not require LLM-driven meta-coordination.
 
-Additional concerns specific to AbbVie's operating context `[industry-typical]`:
+Additional concerns specific to the organization's operating context `[industry-typical]`:
 - Validation scoping across a peer-agent system is substantially harder.
 - Audit logs in a peer system must reconstruct agent-to-agent dialogues.
 - InfoSec and EA review tends to favor patterns that look like "known software with LLM calls inside" over patterns that look like "autonomous entities that talk to each other."
@@ -526,7 +526,7 @@ This pattern gives us:
 ## Assumptions that would invalidate this decision
 
 Revisit this ADR if:
-- An existing AbbVie GenAI reference architecture mandates a different pattern (A-Q3).
+- An existing the organization GenAI reference architecture mandates a different pattern (A-Q3).
 - The Claude Agent SDK is not approved for enterprise use (A-C1).
 - Scope expands to genuinely dynamic, open-ended tasks.
 - Evals show that subagents do not outperform single-LLM-call alternatives → gracefully downgrade those nodes.
@@ -805,11 +805,11 @@ All artifacts live under `design/`.
 
 | ID | Question | Who answers | Blocks |
 |---|---|---|---|
-| Q1 | "Marketplace" at AbbVie — which product surface? | Sponsor org | Pilot definition |
+| Q1 | "Marketplace" at the organization — which product surface? | Sponsor org | Pilot definition |
 | Q2 | Which BU(s) partner for v1 pilot? | Sponsor | P8 fixtures, pilot |
 | Q3 | LLM runtime — Bedrock or Azure AI Foundry or other? | EA / CloudOps | Deployment |
 | Q4 | Validation posture — v1 is non-GxP? | Legal / Compliance | ADR-003 (pending) |
-| Q5 | Existing AbbVie GenAI reference architecture? | EA / AI Governance | Possible rework |
+| Q5 | Existing the organization GenAI reference architecture? | EA / AI Governance | Possible rework |
 | Q6 | Claude Code / Agent SDK approved by InfoSec? | InfoSec | Go-live |
 | Q7 | Product-area-to-BU registry source? | EA / PMO | Registry bootstrap |
 | Q8 | HITL operating model — reviewers, SLAs? | Sponsor + Ops | Go-live |
@@ -856,7 +856,7 @@ Prompts, schemas, configs, and decision criteria are versioned together. A chang
 >
 > **How this document is used.** Each agent's prompt draws its judgment rules from the gate(s) it owns here. When we need to change how an agent decides, we change this document first, then regenerate the prompt.
 >
-> **Validation path.** Draft v1. Must be reviewed with a real AbbVie communications or change-management professional and adjusted to reflect AbbVie's actual norms before go-live.
+> **Validation path.** Draft v1. Must be reviewed with a real enterprise communications or change-management professional and adjusted to reflect the organization's actual norms before go-live.
 >
 > **Status:** Draft v1.
 
@@ -894,7 +894,7 @@ Each gate can also emit `ESCALATE` to route to human review when confidence is t
 
 Not every release note or change artifact warrants a BU-head notification. A bug fix that no one noticed, a silent internal refactor, a copy tweak — these do not belong in a BU head's inbox. Pushing them through creates noise, erodes trust, and teaches recipients to ignore future notifications.
 
-A thoughtful communications lead asks: *"Is there any party, inside or outside AbbVie, whose work or experience will change because of this?"* If no, archive. If yes, continue.
+A thoughtful communications lead asks: *"Is there any party, inside or outside the organization, whose work or experience will change because of this?"* If no, archive. If yes, continue.
 
 ### Signals that favor `COMMUNICATE`
 
@@ -1199,7 +1199,7 @@ Code-enforced policies are invariants. Agents reason within them. Agents can be 
 ## What this document is *not*
 
 - **Not a rulebook.** Signals above are heuristics, not complete specifications. Agents still need judgment.
-- **Not final.** Draft v1. Must be reviewed with a real AbbVie change-management or internal-communications professional.
+- **Not final.** Draft v1. Must be reviewed with a real enterprise change-management or internal-communications professional.
 - **Not exhaustive.** Edge cases will surface during pilot. Update this document, regenerate prompts, re-eval.
 
 ---

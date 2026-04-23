@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://pulsecraft.abbvie.internal/schemas/audit_record.schema.json",
+  "$id": "https://pulsecraft.internal/schemas/audit_record.schema.json",
   "title": "AuditRecord",
   "description": "Append-only audit log entry. One record is written for every LLM invocation, tool call, hook firing, HITL action, delivery attempt, state transition, policy check, and error. Records are immutable once written. No PII anywhere — output_summary is a structured summary, never a raw LLM response dump.",
   "type": "object",

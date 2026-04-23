@@ -96,7 +96,7 @@ class BUProfile(BaseModel):
     head: BUHead
     therapeutic_area: str | None = Field(
         default=None,
-        description="Primary therapeutic area. Placeholder in v1; will align with AbbVie BU taxonomy.",
+        description="Primary therapeutic area. Placeholder in v1; will align with the organization's BU taxonomy.",
     )
     owned_product_areas: list[str] = Field(
         min_length=1,

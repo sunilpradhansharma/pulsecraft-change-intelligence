@@ -8,7 +8,7 @@
 
 Assumption tags used throughout this document:
 - `[A]` — **Assumption** carried forward for design purposes; must be validated in Track A discovery before freeze.
-- `[I]` — **Industry-typical** reference (pharma / life-sciences norm). Not a claim about AbbVie's actual internal state.
+- `[I]` — **Industry-typical** reference (pharma / life-sciences norm). Not a claim about any specific organization's internal state.
 - `[TBD]` — **To be determined** by the identified owner.
 
 ---
@@ -29,7 +29,7 @@ BU leaders `[A]` currently learn about marketplace product/feature changes **too
 
 - GenAI maturity has reached the point where structured interpretation of unstructured change artifacts is reliable enough for enterprise use, *provided* the system is architected with appropriate guardrails and human-in-the-loop controls. `[I]`
 - The Head of AI sponsorship creates top-cover for establishing an agent-based pattern that can be reused beyond this initiative.
-- No existing AbbVie GenAI reference architecture or agent-framework standard has been identified `[A-Q3]`; PulseCraft will likely set precedent, which raises the quality bar on its design artifacts.
+- No existing internal GenAI reference architecture or agent-framework standard has been identified `[A-Q3]`; PulseCraft will likely set precedent, which raises the quality bar on its design artifacts.
 
 ### 2.3 What "marketplace" means here
 
@@ -91,12 +91,12 @@ Decomposed:
 - **21 CFR Part 11:** not in scope for v1; architecture preserves option value for later validation if scope expands.
 - **HIPAA / PHI:** no PHI shall enter or persist in PulseCraft. Redaction hook at ingest boundary.
 - **MLR review:** any drafted message whose content could be construed as scientific communication is routed to MLR queue before delivery.
-- **Data residency:** enterprise tenancy; no data egress outside AbbVie-approved cloud boundaries.
+- **Data residency:** enterprise tenancy; no data egress outside enterprise-approved cloud boundaries.
 
 ### 6.2 Data handling
 
 - No customer data, patient data, adverse-event data, or HCP-identifying data in any PulseCraft artifact.
-- No AbbVie-internal secrets, credentials, or security details in drafted messages.
+- No internal secrets, credentials, or security details in drafted messages.
 - Source artifacts may reference such data; ingest hook must redact before interpretation.
 - Audit logs retained per enterprise retention policy `[TBD]`.
 
@@ -155,7 +155,7 @@ Contracts, schemas, and queue boundaries are shaped to scale to the headroom col
 |---|---|---|---|---|
 | A-Q1 | Sponsor scope = "marketplace notifications for BU heads" as described | Rescope; unlikely to invalidate pattern | Sponsor alignment conversation | Oṁ |
 | A-Q2 | "Marketplace" refers to a single, identifiable product surface | Increases scope; may require multiple registries | Sponsor + product-org conversation | Oṁ + Sponsor org |
-| A-Q3 | No existing AbbVie GenAI reference architecture to conform to | If one exists, may require rework of ADR-001/002 | Direct check with EA, InfoSec, AI governance body | Oṁ |
+| A-Q3 | No existing internal GenAI reference architecture to conform to | If one exists, may require rework of ADR-001/002 | Direct check with EA, InfoSec, AI governance body | Oṁ |
 | A-Q4 | LLM runtime selection is in-scope for this project | If pre-decided, accelerates runtime decision | EA / CloudOps conversation | Oṁ |
 | A-Q5 | v1 explicitly non-GxP | If v1 is GxP-adjacent, validation posture rewrites cost/timeline | Legal / Compliance review | Sponsor → Legal |
 | A-Q6 | Willing pilot BU is identifiable within sponsor's network | If not, pilot delayed | Sponsor office introduction | Oṁ + Sponsor |
@@ -184,7 +184,7 @@ Before v1 go-live, the following must be resolved:
 1. **Scope confirmation** from sponsor: marketplace definition, target outcome, v1 boundaries.
 2. **Validation posture decision** from Legal / Compliance.
 3. **LLM runtime decision** from EA / CloudOps.
-4. **GenAI governance alignment** — confirmation that no existing AbbVie standard must be conformed to.
+4. **GenAI governance alignment** — confirmation that no existing internal standard must be conformed to.
 5. **Pilot BU identification** — named co-sponsor willing to partner.
 6. **Data handling sign-off** by InfoSec / Privacy.
 
@@ -192,4 +192,4 @@ Before v1 go-live, the following must be resolved:
 
 | Version | Author | Summary |
 |---|---|---|
-| v1 |  | First full Problem Statement with AbbVie context, assumption tags, risk register |
+| v1 |  | First full Problem Statement with enterprise context, assumption tags, risk register |

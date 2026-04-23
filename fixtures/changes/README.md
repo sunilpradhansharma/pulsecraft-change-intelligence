@@ -1,6 +1,6 @@
 # Synthetic Change Fixtures
 
-Used for dev and eval. No real data. All content is synthetic — no real AbbVie system names, product names, or personnel.
+Used for dev and eval. No real data. All content is synthetic — no real enterprise system names, product names, or personnel.
 
 | Fixture | Scenario | Decision pattern target |
 |---|---|---|

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://pulsecraft.abbvie.internal/schemas/personalized_brief.schema.json",
+  "$id": "https://pulsecraft.internal/schemas/personalized_brief.schema.json",
   "title": "PersonalizedBrief",
   "description": "BUAtlas's output for a single BU, produced in parallel per candidate BU. Contains gate 4 (relevance) and gate 5 (message quality) decisions, plus BU-tailored message variants ready for channel rendering.",
   "type": "object",
@@ -155,7 +155,7 @@
       "type": "array",
       "description": "Gate decisions made by BUAtlas (gates 4 and 5) in order. Each entry records the verb, reason, confidence, and agent version.",
       "items": {
-        "$ref": "https://pulsecraft.abbvie.internal/schemas/decision.schema.json"
+        "$ref": "https://pulsecraft.internal/schemas/decision.schema.json"
       }
     },
     "regeneration_attempts": {

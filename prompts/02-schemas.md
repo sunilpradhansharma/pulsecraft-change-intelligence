@@ -172,7 +172,7 @@ Required fields:
 - `bu_id` (string — stable identifier, e.g., `immunology`, `oncology`)
 - `name` (string — display name)
 - `head` (object: `{ name: string, role: string, delegate_ids?: array of string }`)
-- `therapeutic_area` (optional string — e.g., `immunology`, `neuroscience`. Placeholder until real AbbVie BU taxonomy is loaded.)
+- `therapeutic_area` (optional string — e.g., `immunology`, `neuroscience`. Placeholder until real enterprise BU taxonomy is loaded.)
 - `owned_product_areas` (array of strings — matches `impact_areas` vocabulary in ChangeBriefs)
 - `preferences` (object: `{ channels: array of enum[...], quiet_hours: { timezone: string, start: "HH:MM", end: "HH:MM" }, digest_opt_in: bool, max_notifications_per_week?: integer }`)
 - `active_initiatives` (array of strings — freeform; used by BUAtlas to assess "BU currently cares about X")
@@ -213,7 +213,7 @@ Each of `ChangeBrief`, `PersonalizedBrief`, `DeliveryPlan` carries a `decisions[
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://pulsecraft.abbvie.internal/schemas/decision.schema.json",
+  "$id": "https://pulsecraft.internal/schemas/decision.schema.json",
   "title": "Decision",
   "description": "A single gate decision made by an agent, carried in the contract's decisions[] array. Enables full decision-chain replay.",
   "type": "object",
@@ -313,7 +313,7 @@ In `tests/unit/schemas/` (create folder):
 Fixture data for tests lives in `tests/fixtures/schemas/minimal_valid/`:
 - `change_artifact.json`, `change_brief.json`, `personalized_brief.json`, `delivery_plan.json`, `bu_profile.json`, `audit_record.json`
 
-These fixtures use only synthetic data. No AbbVie-internal system names, no real people, no real product names. Use placeholder values like `"bu_id": "bu_alpha"`, `"name": "<display-name>"`.
+These fixtures use only synthetic data. No internal system names, no real people, no real product names. Use placeholder values like `"bu_id": "bu_alpha"`, `"name": "<display-name>"`.
 
 ### Step 7 — Verify
 

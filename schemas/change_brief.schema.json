@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://pulsecraft.abbvie.internal/schemas/change_brief.schema.json",
+  "$id": "https://pulsecraft.internal/schemas/change_brief.schema.json",
   "title": "ChangeBrief",
   "description": "SignalScribe's structured interpretation of a ChangeArtifact, including gate 1-3 decisions. Produced by the SignalScribe agent; consumed by the orchestrator which fans it out to BUAtlas per candidate BU.",
   "type": "object",
@@ -194,7 +194,7 @@
       "type": "array",
       "description": "Gate decisions made by SignalScribe (gates 1, 2, 3) in the order they were made. Each entry records the verb, reason, confidence, and agent version.",
       "items": {
-        "$ref": "https://pulsecraft.abbvie.internal/schemas/decision.schema.json"
+        "$ref": "https://pulsecraft.internal/schemas/decision.schema.json"
       }
     },
     "open_questions": {

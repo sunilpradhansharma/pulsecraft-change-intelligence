@@ -12,7 +12,7 @@
 
 # Instructions for Claude Code
 
-You are setting up the PulseCraft repository — an AbbVie-internal AI service that turns marketplace product/feature changes into personalized notifications for BU heads. PulseCraft is implemented as a team of three specialist AI agents (SignalScribe, BUAtlas, PushPilot) each acting as decision-makers at six judgment gates, orchestrated by a deterministic Python service built on the Claude Agent SDK.
+You are setting up the PulseCraft repository — an internal AI service that turns marketplace product/feature changes into personalized notifications for BU heads. PulseCraft is implemented as a team of three specialist AI agents (SignalScribe, BUAtlas, PushPilot) each acting as decision-makers at six judgment gates, orchestrated by a deterministic Python service built on the Claude Agent SDK.
 
 Your job in **this session** is to scaffold the repository — nothing more. You are **not** authoring agents, skills, commands, or orchestrator logic. Those are separate sessions.
 
@@ -91,7 +91,7 @@ Required metadata:
 
 - Project name: `pulsecraft`
 - Version: `0.1.0`
-- Description: "AbbVie-internal AI service: marketplace change → BU-ready notifications via a team of three specialist AI agents."
+- Description: "internal AI service: marketplace change → BU-ready notifications via a team of three specialist AI agents."
 - Requires Python: `>=3.11`
 - License: `Proprietary` (or leave a placeholder; the user will adjust)
 
@@ -173,7 +173,7 @@ Do **not** embed the architecture diagram yet — that's committed in prompt 01.
 
 ### Step 7 — Author `LICENSE` placeholder and `CONTRIBUTING.md`
 
-- `LICENSE`: Create a file containing the text `TBD — proprietary AbbVie-internal. License to be confirmed with Legal in Track A discovery.`
+- `LICENSE`: Create a file containing the text `TBD — proprietary internal. License to be confirmed with Legal in Track A discovery.`
 - `CONTRIBUTING.md`: Create a short file explaining that PulseCraft is in planning/early-build phase, contributions are coordinated via the sponsor (Head of AI), and changes should follow the prompt-driven build process (author a design change in `design/`, update `prompts/` to reflect it, run the prompt in Claude Code).
 
 ### Step 8 — Author `scripts/hello.py`
@@ -228,7 +228,7 @@ Do **not** push to remote unless the user explicitly asks. Leave the commit on t
 - **Do not author agent prompts, skill prompts, or command prompts.** Those are later sessions. If you feel tempted, resist — leave placeholder READMEs and move on.
 - **Do not invent design decisions.** If something isn't specified here, leave a `TODO(prompt-XX)` comment and flag it in your final report.
 - **Do not create branches.** Work on the current branch (`main` or whatever the user has checked out).
-- **Do not make assumptions about AbbVie-internal systems.** Integrations (Jira, Veeva, Teams, etc.) are stubs only — no real URLs, no real credentials, no real tenant IDs.
+- **Do not make assumptions about internal systems.** Integrations (Jira, Veeva, Teams, etc.) are stubs only — no real URLs, no real credentials, no real tenant IDs.
 - **If Claude Agent SDK is not installable** (e.g., package name changed, version conflict, auth required), stop and ask the user rather than guess. The SDK is a real package at `claude-agent-sdk` on PyPI, but verify before pinning a version.
 - **Ask the user before any destructive action** (force-push, rm -rf, etc.). None should be needed in this prompt.
 

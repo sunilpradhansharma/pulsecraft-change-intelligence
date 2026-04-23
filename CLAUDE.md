@@ -8,9 +8,9 @@
 
 ## About this project
 
-**PulseCraft** is an AbbVie-internal AI service that turns marketplace product/feature changes into BU-ready, personalized notifications for BU leadership. It's implemented as a team of three specialist AI agents — **SignalScribe**, **BUAtlas**, **PushPilot** — each acting as decision-makers at six judgment gates, orchestrated by a deterministic Python service built on the Claude Agent SDK.
+**PulseCraft** is an internal AI service that turns marketplace product/feature changes into BU-ready, personalized notifications for BU leadership. It's implemented as a team of three specialist AI agents — **SignalScribe**, **BUAtlas**, **PushPilot** — each acting as decision-makers at six judgment gates, orchestrated by a deterministic Python service built on the Claude Agent SDK.
 
-**Sponsor:** Head of AI, AbbVie.
+**Sponsor:** Head of AI (enterprise pilot context).
 **Status:** Planning complete; implementation in progress via prompt-driven development.
 
 ## Current phase
@@ -40,6 +40,7 @@
 - ✅ 13 — First end-to-end dryrun: all 8 fixtures with real agents, 2 bugs fixed (HOLD_INDEFINITE routing verb; mixed-decision confidence semantics), dryrun report in design/dryrun/, 606 tests
 - ✅ 14 — Eval harness: per-agent variance-aware eval, 15 cases × 3 agents, classifier + runner + reporter + aggregator, baseline report (stable=10/acceptable=1/unstable=1, PASS), 619 tests
 - ✅ 14.5 — README overhaul (publication-quality front door for the repo)
+- ✅ 14.6 — Enterprise identifier references removed; repo now reads as generic enterprise project
 
 **Prompts remaining:**
 - *(none — P3 build sequence complete)*
@@ -76,7 +77,7 @@ All implementation happens via prompts in `prompts/`, run one at a time in Claud
 
 ## Project conventions
 
-- **No real AbbVie data.** No real product names, no real BU names (we use `bu_alpha` through `bu_zeta`), no real people (placeholders like `<head-alpha>`), no real internal system names. Real data lands via Track A discovery, not via Claude Code.
+- **No real enterprise identifiers.** No real product names, no real BU names (we use `bu_alpha` through `bu_zeta`), no real people (placeholders like `<head-alpha>`), no real internal system names. Real data lands via Track A discovery, not via Claude Code.
 - **Placeholder pattern for unknowns:** use `<descriptor>` in angle brackets (e.g., `<head-alpha>`, `<delegate-1>`). Never invent realistic-sounding fake names.
 - **Decision criteria is the source of truth.** For any agent behavior question, the answer comes from `design/planning/01-decision-criteria.md`. Do not encode conflicting rules elsewhere.
 - **Schemas are invariant across agent iterations.** Agent prompts may change; data contracts (defined in `schemas/` and `src/pulsecraft/schemas/`) stay stable. If a schema change is genuinely needed, pause and ask rather than break the contract.
@@ -365,7 +366,7 @@ Pass gate: 0 `false_positive_risk` + 0 `mismatch` = PASS. False positives are as
 - **Do not invent design decisions.** If a prompt is ambiguous, ask the user.
 - **Do not add `metadata: {}` escape-hatch fields to schemas.** If a shape is unknown, use a named sub-object with a TODO.
 - **Do not add realistic-sounding fake names** (e.g., "John Smith"). Use explicit placeholders (`<head-alpha>`).
-- **Do not commit real AbbVie data of any kind** — names, system IDs, product names, internal URLs.
+- **No real enterprise identifiers in code, fixtures, prompts, or documentation.** Use generic placeholders: `bu_alpha`..`bu_N` for business units, `the organization` for sponsor context, `pharma MLR process` for regulated-industry references.
 - **Do not skip verification steps** even when everything seems fine. The verification steps catch the subtle bugs.
 - **Do not batch work across multiple prompts in one commit.** One prompt = one feature commit.
 - **Do not silently work around SDK installation failures.** If `claude-agent-sdk` won't install, stop and ask.
@@ -379,5 +380,5 @@ Pass gate: 0 `false_positive_risk` + 0 `mismatch` = PASS. False positives are as
 
 ---
 
-*Last updated: prompt 14.5 (README overhaul — 854-line publication-quality README with SVG architecture diagram, decision guides, use cases table, comparison table, roadmap; all metrics grounded in repo artifacts).*
+*Last updated: prompt 14.6 (enterprise identifier references removed — repo reads as generic enterprise AI-agent system; zero behavior changes; all 619 tests passing).*
 *P3 build sequence complete. No further prompts planned.*

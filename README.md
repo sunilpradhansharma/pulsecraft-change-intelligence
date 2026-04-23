@@ -5,7 +5,7 @@
 [![Python](https://img.shields.io/badge/python-3.14-blue)](https://www.python.org/)
 [![Tests](https://img.shields.io/badge/tests-619%20passing-brightgreen)](#testing)
 [![Model](https://img.shields.io/badge/model-claude--sonnet--4--6-orange)](https://docs.anthropic.com/en/docs/about-claude/models/overview)
-[![License](https://img.shields.io/badge/license-internal%20AbbVie-red)](#license)
+[![License](https://img.shields.io/badge/license-internal-red)](#license)
 [![Status](https://img.shields.io/badge/status-walking%20skeleton-yellow)](#roadmap)
 
 ---
@@ -820,7 +820,7 @@ v0.3.0+ — scale
 
 ## Contributing
 
-This is an internal AbbVie project in active development. The build is prompt-driven: each increment is specified in a prompt file under `prompts/`, run in Claude Code, and committed as a single feature commit with a conventional-commit message.
+This is an internal project in active development. The build is prompt-driven: each increment is specified in a prompt file under `prompts/`, run in Claude Code, and committed as a single feature commit with a conventional-commit message.
 
 Before contributing:
 
@@ -828,7 +828,7 @@ Before contributing:
 2. Read [`design/planning/01-decision-criteria.md`](design/planning/01-decision-criteria.md) — source of truth for any question about agent behavior. If code and this document disagree, fix the code.
 3. Run the default test suite: `.venv/bin/pytest tests/ -m "not llm and not eval" -q`
 
-Convention reminders: snake_case everywhere; no real AbbVie identifiers in any committed file; one prompt = one feature commit; don't silently weaken a test to make it pass.
+Convention reminders: snake_case everywhere; no real enterprise identifiers in any committed file; one prompt = one feature commit; don't silently weaken a test to make it pass.
 
 ---
 
@@ -847,8 +847,8 @@ Convention reminders: snake_case everywhere; no real AbbVie identifiers in any c
 
 ## License
 
-**Internal AbbVie project. All rights reserved. External use requires written permission.**
+**Internal project. All rights reserved. External use requires written permission.**
 
-This repository contains proprietary internal tooling. It is not licensed for redistribution or modification outside AbbVie without written permission.
+This repository contains proprietary internal tooling. It is not licensed for redistribution or modification outside the organization without written permission.
 
 > **For Claude Code sessions:** read [`CLAUDE.md`](CLAUDE.md) before taking any action in this repo. It contains standing instructions, the full build state, and conventions that must be followed.

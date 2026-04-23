@@ -91,7 +91,7 @@ Before touching anything:
 3. **Decisions[] are populated explicitly by the prompt.** The LLM is told to produce, as part of its structured output, the array of decision objects covering whichever of gates 1, 2, 3 the work reached. Orchestrator code does not synthesize decisions post-hoc.
 4. **Citations are mandatory where input supports them.** If the prompt interprets a claim from the `raw_text` of the artifact, it includes a citation in the `sources` array. Hallucinated citations are the failure mode to guard against — test it.
 5. **Confidence calibration matches policy.yaml.** If the prompt says confidence 0.8 and policy threshold is 0.75, the decision stands. If prompt says 0.6 and threshold is 0.75, the orchestrator overrides to ESCALATE. Don't hardcode thresholds in the prompt — the orchestrator applies them.
-6. **No AbbVie-specific knowledge embedded in the prompt.** The agent works for any enterprise. Specifics (BU names, product areas) come from config and inputs, not the prompt.
+6. **No enterprise-specific knowledge embedded in the prompt.** The agent works for any enterprise. Specifics (BU names, product areas) come from config and inputs, not the prompt.
 7. **Prompt is loaded from disk, not embedded in Python.** The `.claude/agents/signalscribe.md` file is the canonical prompt. Python reads it at runtime. This makes prompt iteration a markdown edit, not a Python edit.
 8. **Rate limiting / retries via `tenacity`** (already a dep). On transient errors, retry with exponential backoff. On permanent errors (invalid API key, content policy violation), fail fast with clear error.
 
@@ -115,7 +115,7 @@ Required structure (adapt language, but include these sections):
 
 ## Your role
 
-You are SignalScribe, the first agent in the PulseCraft pipeline at AbbVie. You interpret marketplace product/feature change artifacts (release notes, work items, docs, feature flags, incidents) and produce a structured ChangeBrief that downstream agents (BUAtlas, PushPilot) will use.
+You are SignalScribe, the first agent in the PulseCraft pipeline at the organization. You interpret marketplace product/feature change artifacts (release notes, work items, docs, feature flags, incidents) and produce a structured ChangeBrief that downstream agents (BUAtlas, PushPilot) will use.
 
 You own three decision gates:
 - Gate 1 — Is this change worth communicating at all?

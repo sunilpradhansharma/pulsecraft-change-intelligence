@@ -2,7 +2,7 @@
 
 > **From release notes to BU-ready actions — automatically.**
 >
-> PulseCraft is an internal GenAI service that turns marketplace product/feature changes into timely, BU-relevant, actionable notifications for BU leadership at AbbVie. It is implemented as a team of three specialist AI agents, each a decision-maker at one or more gates in the change-communication workflow.
+> PulseCraft is an internal GenAI service that turns marketplace product/feature changes into timely, BU-relevant, actionable notifications for BU leadership. It is implemented as a team of three specialist AI agents, each a decision-maker at one or more gates in the change-communication workflow.
 
 ---
 
@@ -21,7 +21,7 @@ See [`planning/00-planning-index.md`](planning/00-planning-index.md) for the cur
 
 ## What PulseCraft does
 
-BU leaders at AbbVie currently learn about marketplace product/feature changes too late, inconsistently, and with poor signal-to-noise. PulseCraft solves this by ingesting change artifacts, interpreting them, mapping impact to BUs, drafting personalized messages, and delivering (or queueing for approval) via enterprise-approved channels — with full auditability.
+BU leaders currently learn about marketplace product/feature changes too late, inconsistently, and with poor signal-to-noise. PulseCraft solves this by ingesting change artifacts, interpreting them, mapping impact to BUs, drafting personalized messages, and delivering (or queueing for approval) via enterprise-approved channels — with full auditability.
 
 **Primary job-to-be-done:** *"When a marketplace feature changes, I (BU head) find out on time, in context, with a clear action — and nothing irrelevant."*
 

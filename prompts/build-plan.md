@@ -95,7 +95,7 @@ A repo that, when a fresh change artifact is dropped into it, will:
 6. **Deliver** via approved channels at the right time — or hold for quiet hours, digest for awareness-only items
 7. **Audit** every decision with its reason, replayable via `/explain <change-id>`
 
-All running on your laptop against synthetic fixtures. Zero dependency on real AbbVie systems yet — those integrations come later, after the pattern is validated.
+All running on your laptop against synthetic fixtures. Zero dependency on real enterprise systems yet — those integrations come later, after the pattern is validated.
 
 ---
 
@@ -103,11 +103,11 @@ All running on your laptop against synthetic fixtures. Zero dependency on real A
 
 Worth naming explicitly so you don't think we're hiding anything:
 
-- **Real AbbVie integrations.** Veeva, ServiceNow, actual Teams tenancy, actual email relays — these are Track A / enterprise-onboarding items. The code has adapter stubs; wiring up real endpoints happens later, outside this prompt sequence.
+- **Real enterprise integrations.** Veeva, ServiceNow, actual Teams tenancy, actual email relays — these are Track A / enterprise-onboarding items. The code has adapter stubs; wiring up real endpoints happens later, outside this prompt sequence.
 - **Production deployment.** We're building something you run locally via Claude Code + CLI. Containerization, CI/CD, cloud tenancy (Bedrock vs. Azure AI Foundry) — separate body of work, after validation.
 - **Real BU data.** Real registry, real profiles, real HITL operators. Those need Track A discovery + onboarding. Our synthetic BUs (bu_alpha through bu_zeta) are drop-in replacements until real data arrives.
 - **GitHub Pages site.** Explicitly deferred until after the walking skeleton works. Pretty docs come after working code.
-- **ADR-003 (validation posture) and ADR-004 (LLM runtime).** These need Legal/Compliance and EA/CloudOps decisions from AbbVie — not blocking the build.
+- **ADR-003 (validation posture) and ADR-004 (LLM runtime).** These need Legal/Compliance and EA/CloudOps decisions from the organization — not blocking the build.
 
 ---
 

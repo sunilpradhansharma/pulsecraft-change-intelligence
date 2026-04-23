@@ -9,7 +9,7 @@
 
 **Phase:** Active implementation — schemas and config complete, agent authoring next.
 
-**Last completed:** Prompt 14 (eval harness — per-agent variance-aware eval; classifier + runner + reporter + aggregator; 15 cases × 3 runs; baseline PASS stable=10/acceptable=1/unstable=1 at audit/eval/2026-04-23-baseline/; 619 tests passing).
+**Last completed:** Prompt 14.6 (enterprise identifier references removed — repo reads as generic enterprise AI-agent system; zero behavior changes; all 619 tests passing).
 
 Planning phases P0–P2 are complete. The prompt-driven build sequence is complete through prompt 14. P3 build sequence is done.
 
@@ -138,6 +138,7 @@ Planning phases P0–P2 are complete. The prompt-driven build sequence is comple
 | 100 | Eval unit tests | `tests/unit/eval/test_classifier.py` | 14 | 13 tests covering all 5 classification tiers + edge cases |
 | 101 | Eval pytest integration | `tests/eval/test_agent_evals.py` | 14 | 15 parametrized tests; opt-in via PULSECRAFT_RUN_EVAL_TESTS=1; @pytest.mark.eval |
 | 102 | Eval baseline report | `audit/eval/2026-04-23-baseline/` | 14 | 15 cases × 3 runs; stable=10/acceptable=1/unstable=1/skipped=3; PASS ($1.741, 26.9 min) |
+| 103 | Enterprise identifier removal | *(25 files touched)* | 14.6 | All org-specific identifiers removed; replaced with neutral terminology; zero behavior changes |
 
 ---
 
@@ -179,11 +180,11 @@ Planning phases P0–P2 are complete. The prompt-driven build sequence is comple
 
 | ID | Question | Who answers | Blocks |
 |---|---|---|---|
-| Q1 | "Marketplace" at AbbVie — which product surface? | Sponsor org | Pilot definition |
+| Q1 | "Marketplace" scope — which product surface? | Sponsor org | Pilot definition |
 | Q2 | Which BU(s) partner for v1 pilot? | Sponsor | P8 fixtures, pilot |
 | Q3 | LLM runtime — Bedrock or Azure AI Foundry or other? | EA / CloudOps | Deployment |
 | Q4 | Validation posture — v1 is non-GxP? | Legal / Compliance | ADR-003 (pending) |
-| Q5 | Existing AbbVie GenAI reference architecture? | EA / AI Governance | Possible rework |
+| Q5 | Existing internal GenAI reference architecture? | EA / AI Governance | Possible rework |
 | Q6 | Claude Code / Agent SDK approved by InfoSec? | InfoSec | Go-live |
 | Q7 | Product-area-to-BU registry source? | EA / PMO | Registry bootstrap |
 | Q8 | HITL operating model — reviewers, SLAs? | Sponsor + Ops | Go-live |
@@ -217,6 +218,7 @@ All implementation happens via prompts in `/prompts/`, run one at a time in Clau
 | 13 | `prompts/13-dryrun-walkthrough.md` | First end-to-end dryrun | ✅ Done |
 | 14 | `prompts/14-eval-harness.md` | Fixture-based evals | ✅ Done |
 | 14.5 | `prompts/14.5-readme-overhaul.md` | README overhaul — publication-quality documentation | ✅ Done |
+| 14.6 | `prompts/14.6-remove-abbvie.md` | Remove org-specific identifiers — repo reads as generic enterprise project | ✅ Done |
 
 ---
 

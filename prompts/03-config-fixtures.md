@@ -15,7 +15,7 @@
 
 # Instructions for Claude Code
 
-You are authoring the **configuration files** and **synthetic change fixtures** for PulseCraft. These are foundational: every agent prompt, skill, and eval will read from these files. Getting them right means downstream prompts can run end-to-end tests against realistic inputs without waiting for real AbbVie data.
+You are authoring the **configuration files** and **synthetic change fixtures** for PulseCraft. These are foundational: every agent prompt, skill, and eval will read from these files. Getting them right means downstream prompts can run end-to-end tests against realistic inputs without waiting for real enterprise data.
 
 Your job in **this session** is to produce:
 
@@ -44,8 +44,8 @@ If something in this prompt conflicts with the decision criteria document, the d
 
 ## Design principles
 
-1. **Synthetic, not real.** No AbbVie internal system names, no real people, no real product names, no real therapeutic-area-specific terminology except where generic (e.g., "immunology" as a BU label is fine — it's industry-standard — but no real AbbVie product brand names).
-2. **Placeholder BU IDs.** Use `bu_alpha`, `bu_beta`, `bu_gamma`, etc. These are stand-ins until real AbbVie BU taxonomy is loaded via Track A discovery. Keep BU IDs lowercase snake_case for consistency.
+1. **Synthetic, not real.** No enterprise internal system names, no real people, no real product names, no real therapeutic-area-specific terminology except where generic (e.g., "immunology" as a BU label is fine — it's industry-standard — but no real enterprise product brand names).
+2. **Placeholder BU IDs.** Use `bu_alpha`, `bu_beta`, `bu_gamma`, etc. These are stand-ins until real enterprise BU taxonomy is loaded via Track A discovery. Keep BU IDs lowercase snake_case for consistency.
 3. **Realistic shapes, synthetic content.** The fixtures must feel like actual release notes / work items / feature flag events — not toy examples. Multi-paragraph, ambiguity where ambiguity is typical, implicit references, uneven quality. If they're all pristine, they won't surface real agent failure modes.
 4. **Fixture diversity is the whole point.** Every decision verb (`COMMUNICATE`, `ARCHIVE`, `ESCALATE`, `RIPE`, `HOLD_UNTIL`, `HOLD_INDEFINITE`, `READY`, `NEED_CLARIFICATION`, `UNRESOLVABLE`, `AFFECTED`, `ADJACENT`, `NOT_AFFECTED`, `WORTH_SENDING`, `WEAK`, `NOT_WORTH`, `SEND_NOW`, `DIGEST`) should be the "correct answer" for at least one fixture scenario. The fixtures *don't* declare which verb they should trigger — that's what the agents decide. But the fixture set *as a whole* should provide coverage.
 5. **Versioned YAML.** Every config file has a `schema_version` at the top (`"1.0"`). Every config file has a header comment explaining its purpose and ownership.
@@ -463,7 +463,7 @@ Tests (tests/unit/config/, tests/unit/fixtures/):
 - Config validation, cross-reference integrity, policy/channel sanity
 - Fixture schema validation, coverage guards
 
-All synthetic — no real AbbVie data. Real data loaded via Track A onboarding.
+All synthetic — no real enterprise data. Real data loaded via Track A onboarding.
 
 Next: prompt 04 — CLAUDE.md orchestrator spec.
 ```
@@ -472,7 +472,7 @@ Do not push to remote unless the user asks.
 
 ## Rules for this session
 
-- **No real AbbVie system names.** If tempted to write something like "Veeva CRM integration," use `"<crm-system>"` or `"internal CRM"` instead.
+- **No real enterprise system names.** If tempted to write something like "Veeva CRM integration," use `"<crm-system>"` or `"internal CRM"` instead.
 - **No real drug/product names.** Not even close-sounding ones.
 - **No real people.** Placeholder `<head-alpha>` style.
 - **No free-form text in fixtures that happens to contain real PHI patterns.** The `raw_text` of each fixture should represent *what would appear after upstream redaction* — i.e., already-clean text.

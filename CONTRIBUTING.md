@@ -1,6 +1,6 @@
 # Contributing to PulseCraft
 
-PulseCraft is in its planning and early-build phase. It is an AbbVie-internal project; contributions are coordinated via the sponsor (Head of AI, AbbVie).
+PulseCraft is in its planning and early-build phase. It is an internal project; contributions are coordinated via the sponsor (Head of AI).
 
 ## How changes are made
 
@@ -15,7 +15,7 @@ This process ensures every implementation decision has a traceable design ration
 
 ## Getting help
 
-Contact the AbbVie AI sponsor or team lead before opening any issue or making any change outside the planned prompt sequence.
+Contact the AI sponsor or team lead before opening any issue or making any change outside the planned prompt sequence.
 
 ## Code style
 

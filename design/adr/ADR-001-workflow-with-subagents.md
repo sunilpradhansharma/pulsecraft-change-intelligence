@@ -50,7 +50,7 @@ Detailed subagent topology, tool scoping, and fan-out mechanics are covered in *
 
 A peer-agent team — three LLM agents communicating to reach consensus — would add coordination overhead, nondeterminism, and debugging difficulty without buying flexibility the problem actually needs. Peer-agent patterns shine when the division of labor itself is dynamic. PulseCraft's decomposition into "understand → personalize → deliver" does not require LLM-driven meta-coordination.
 
-Additional concerns specific to AbbVie's operating context `[industry-typical]`:
+Additional concerns specific to the organization's operating context `[industry-typical]`:
 - Validation scoping across a peer-agent system is substantially harder.
 - Audit logs in a peer system must reconstruct agent-to-agent dialogues.
 - InfoSec and EA review tends to favor patterns that look like "known software with LLM calls inside" over patterns that look like "autonomous entities that talk to each other."
@@ -111,7 +111,7 @@ This pattern gives us:
 ## Assumptions that would invalidate this decision
 
 Revisit this ADR if:
-- An existing AbbVie GenAI reference architecture mandates a different pattern (A-Q3).
+- An existing internal GenAI reference architecture mandates a different pattern (A-Q3).
 - The Claude Agent SDK is not approved for enterprise use (A-C1).
 - Scope expands to genuinely dynamic, open-ended tasks.
 - Evals show that subagents do not outperform single-LLM-call alternatives → gracefully downgrade those nodes.

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://pulsecraft.abbvie.internal/schemas/change_artifact.schema.json",
+  "$id": "https://pulsecraft.internal/schemas/change_artifact.schema.json",
   "title": "ChangeArtifact",
   "description": "A normalized change artifact — the output of the ingest adapters, input to SignalScribe. Same shape regardless of source type (release note, Jira ticket, doc, feature flag, incident). All content has been redacted of PII, PHI, and secrets by the ingest hook before this schema is populated.",
   "type": "object",

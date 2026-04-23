@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://pulsecraft.abbvie.internal/schemas/decision.schema.json",
+  "$id": "https://pulsecraft.internal/schemas/decision.schema.json",
   "title": "Decision",
   "description": "A single gate decision made by an agent, carried in the contract's decisions[] array. Enables full decision-chain replay.",
   "type": "object",

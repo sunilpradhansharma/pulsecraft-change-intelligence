@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://pulsecraft.abbvie.internal/schemas/delivery_plan.schema.json",
+  "$id": "https://pulsecraft.internal/schemas/delivery_plan.schema.json",
   "title": "DeliveryPlan",
   "description": "PushPilot's gate 6 delivery decision plus deterministic delivery metadata. Consumed by delivery adapters. The agent decides the verb and reason; deterministic code enforces policy invariants (quiet hours, rate limits, dedupe) and may override the agent decision toward a more conservative outcome, logging the override as a separate audit record.",
   "type": "object",
@@ -187,7 +187,7 @@
       "type": "array",
       "description": "Gate 6 decision made by PushPilot. Typically one entry per delivery plan.",
       "items": {
-        "$ref": "https://pulsecraft.abbvie.internal/schemas/decision.schema.json"
+        "$ref": "https://pulsecraft.internal/schemas/decision.schema.json"
       }
     }
   }

@@ -73,7 +73,7 @@ When you finish:
 3. **Decisions[] populated by the prompt** — gate 4 decision always; gate 5 decision only when gate 4 returns `AFFECTED`.
 4. **Citations mandatory** — when BUAtlas's `why_relevant` or message variant references a claim, it must trace back to the ChangeBrief (which already has sources from SignalScribe).
 5. **Policy thresholds from config** — confidence thresholds for gate 4 and gate 5 come from `policy.yaml`, not hardcoded.
-6. **No AbbVie-specific knowledge in the prompt** — BU names are inputs, not prompt content.
+6. **No enterprise-specific knowledge in the prompt** — BU names are inputs, not prompt content.
 
 **New for BUAtlas:**
 
@@ -101,7 +101,7 @@ Structure mirrors SignalScribe's prompt. Required sections:
 
 ## Your role
 
-You are BUAtlas, the second agent in the PulseCraft pipeline at AbbVie. You take a ChangeBrief from SignalScribe + a single BU's profile, and decide:
+You are BUAtlas, the second agent in the PulseCraft pipeline at the organization. You take a ChangeBrief from SignalScribe + a single BU's profile, and decide:
 - Gate 4: Is this BU actually affected by the change (versus merely adjacent)?
 - Gate 5: If the BU is affected, is the message draft worth this BU head's attention?
 

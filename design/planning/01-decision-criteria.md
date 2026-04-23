@@ -4,7 +4,7 @@
 >
 > **How this document is used.** Each agent's prompt draws its judgment rules from the gate(s) it owns here. When we need to change how an agent decides, we change this document first, then regenerate the prompt.
 >
-> **Validation path.** Draft v1. Must be reviewed with a real AbbVie communications or change-management professional and adjusted to reflect AbbVie's actual norms before go-live.
+> **Validation path.** Draft v1. Must be reviewed with a real communications or change-management professional and adjusted to reflect the organization's actual norms before go-live.
 >
 > **Status:** Draft v1.
 
@@ -42,7 +42,7 @@ Each gate can also emit `ESCALATE` to route to human review when confidence is t
 
 Not every release note or change artifact warrants a BU-head notification. A bug fix that no one noticed, a silent internal refactor, a copy tweak — these do not belong in a BU head's inbox. Pushing them through creates noise, erodes trust, and teaches recipients to ignore future notifications.
 
-A thoughtful communications lead asks: *"Is there any party, inside or outside AbbVie, whose work or experience will change because of this?"* If no, archive. If yes, continue.
+A thoughtful communications lead asks: *"Is there any party, inside or outside the organization, whose work or experience will change because of this?"* If no, archive. If yes, continue.
 
 ### Signals that favor `COMMUNICATE`
 
@@ -347,7 +347,7 @@ Code-enforced policies are invariants. Agents reason within them. Agents can be 
 ## What this document is *not*
 
 - **Not a rulebook.** Signals above are heuristics, not complete specifications. Agents still need judgment.
-- **Not final.** Draft v1. Must be reviewed with a real AbbVie change-management or internal-communications professional.
+- **Not final.** Draft v1. Must be reviewed with a real change-management or internal-communications professional.
 - **Not exhaustive.** Edge cases will surface during pilot. Update this document, regenerate prompts, re-eval.
 
 ---

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://pulsecraft.abbvie.internal/schemas/bu_profile.schema.json",
+  "$id": "https://pulsecraft.internal/schemas/bu_profile.schema.json",
   "title": "BUProfile",
   "description": "Business Unit configuration. Read-only input to BUAtlas; authored and maintained as versioned YAML in config/ and validated against this schema. This file contains no PII by contract — all 'name' values are display names only, not email addresses or employee IDs.",
   "type": "object",
@@ -52,7 +52,7 @@
     },
     "therapeutic_area": {
       "type": ["string", "null"],
-      "description": "Primary therapeutic area for this BU (e.g., 'immunology', 'neuroscience', 'oncology'). Placeholder field in v1; will align with the official AbbVie BU taxonomy once loaded. Null until taxonomy is loaded."
+      "description": "Primary therapeutic area for this BU (e.g., 'immunology', 'neuroscience', 'oncology'). Placeholder field in v1; will align with the official BU taxonomy once loaded. Null until taxonomy is loaded."
     },
     "owned_product_areas": {
       "type": "array",
