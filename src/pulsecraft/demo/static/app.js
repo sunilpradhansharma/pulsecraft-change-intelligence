@@ -261,7 +261,7 @@ function renderRunStarted(p) {
     <div class="change-header__source">${sourceIcon}<span>${escHtml(p.source_type || 'release_note')}</span></div>
     <div class="change-header__title">${escHtml(p.title || 'Change artifact')}</div>
     <div class="change-header__meta">
-      <span>${escHtml((p.change_id || '').slice(0, 8)}…</span>
+      <span>${escHtml((p.change_id || '').slice(0, 8))}…</span>
       <span>${escHtml(p.source_ref || '')}</span>
     </div>
   `;

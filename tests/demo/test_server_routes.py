@@ -27,6 +27,16 @@ class TestIndexRoute:
         assert "PulseCraft" in resp.text
 
 
+class TestAppJsSyntax:
+    def test_app_js_has_no_unclosed_template_expressions(self) -> None:
+        """Regression: escHtml( call in change-header__meta was missing closing )."""
+        resp = client.get("/static/app.js")
+        assert resp.status_code == 200
+        # The broken form had one fewer closing paren than required
+        assert "${escHtml((p.change_id || '').slice(0, 8)}…" not in resp.text
+        assert "${escHtml((p.change_id || '').slice(0, 8))}…" in resp.text
+
+
 class TestScenariosRoute:
     def test_scenarios_returns_five_entries(self) -> None:
         resp = client.get("/api/scenarios")
