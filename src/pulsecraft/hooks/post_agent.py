@@ -34,6 +34,7 @@ def run(ctx: HookContext) -> HookResult:
             DecisionVerb.NEED_CLARIFICATION,
             DecisionVerb.UNRESOLVABLE,
             DecisionVerb.ARCHIVE,
+            DecisionVerb.HOLD_INDEFINITE,
         }
     )
 

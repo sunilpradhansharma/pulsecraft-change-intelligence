@@ -153,3 +153,40 @@ def test_sensitive_data_marker_fails():
     d = _make_decision(1, DecisionVerb.COMMUNICATE, 0.9)
     result = run(_ctx([d], message_text="Reference patient id 123.", policy=policy))
     assert result.outcome == "fail"
+
+
+def test_escalate_skips_confidence_check():
+    """ESCALATE is a routing decision — confidence check must not apply."""
+    d = _make_decision(1, DecisionVerb.ESCALATE, 0.3)
+    result = run(_ctx([d], policy=_make_policy(gate_1_communicate=0.9)))
+    assert result.outcome == "pass"
+
+
+def test_need_clarification_skips_confidence_check():
+    d = _make_decision(3, DecisionVerb.NEED_CLARIFICATION, 0.4)
+    result = run(_ctx([d]))
+    assert result.outcome == "pass"
+
+
+def test_hold_indefinite_skips_confidence_check():
+    """HOLD_INDEFINITE is a routing decision — should not fail confidence check.
+
+    Regression test for prompt-13 dryrun finding: fixture 005 (muddled_need_clarification)
+    produced HOLD_INDEFINITE at gate 2 with low confidence, causing post_agent to fail
+    closed and route to FAILED instead of AWAITING_HITL.
+    """
+    d = _make_decision(2, DecisionVerb.HOLD_INDEFINITE, 0.35)
+    result = run(_ctx([d]))
+    assert result.outcome == "pass"
+
+
+def test_archive_skips_confidence_check():
+    d = _make_decision(1, DecisionVerb.ARCHIVE, 0.2)
+    result = run(_ctx([d], policy=_make_policy(gate_1_communicate=0.9)))
+    assert result.outcome == "pass"
+
+
+def test_unresolvable_skips_confidence_check():
+    d = _make_decision(3, DecisionVerb.UNRESOLVABLE, 0.1)
+    result = run(_ctx([d]))
+    assert result.outcome == "pass"
