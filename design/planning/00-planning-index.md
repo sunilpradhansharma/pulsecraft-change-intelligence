@@ -9,9 +9,9 @@
 
 **Phase:** Active implementation — schemas and config complete, agent authoring next.
 
-**Last completed:** Prompt 11 (operator slash commands — 11 CLI subcommands incl. /explain decision trail, CLI refactor into commands/, explain_chain skill; 545 tests passing).
+**Last completed:** Prompt 11.5 (explain scoping fix — /explain scoped to latest run by default; detect_runs run-boundary detection; --run/--all/--list-runs flags; usd_estimate wired from agents through audit to /explain totals; 557 tests passing).
 
-Planning phases P0–P2 are complete. The prompt-driven build sequence is at prompt 11. Prompt 12 (guardrail hooks) is next.
+Planning phases P0–P2 are complete. The prompt-driven build sequence is at prompt 11.5. Prompt 12 (guardrail hooks) is next.
 
 ---
 
@@ -117,6 +117,10 @@ Planning phases P0–P2 are complete. The prompt-driven build sequence is at pro
 | 79 | CLI common utilities | `src/pulsecraft/cli/common.py` | 11 | resolve_change_id, print_json_output, load_audit_writer, load_hitl_queue, format_ts, truncate |
 | 80 | CLI unit tests | `tests/unit/cli/` (3 modules) | 11 | test_resolve_change_id (7 tests), test_explain_chain (10 tests), test_metrics (4 tests) |
 | 81 | CLI integration tests | `tests/integration/cli/` (3 modules) | 11 | test_commands_smoke (12 tests), test_explain_output (10 tests), test_pending_flow (7 tests) |
+| 82 | explain_chain: detect_runs + RunBoundary + RunNotFound | `src/pulsecraft/skills/explain_chain.py` | 11.5 | Run-boundary detection; /explain defaults to latest run; --run/--all/--list-runs |
+| 83 | usd_estimate on agent output schemas | `src/pulsecraft/schemas/change_brief.py`, `personalized_brief.py`, `push_pilot_output.py` | 11.5 | Internal cost field (exclude=True, not in JSON schema) |
+| 84 | Cost wiring: agents → engine → audit | `agents/*.py`, `orchestrator/engine.py` | 11.5 | Agents set .usd_estimate; engine passes AuditMetrics(cost_usd=...) to audit |
+| 85 | detect_runs unit tests | `tests/unit/skills/test_detect_runs.py` | 11.5 | 12 tests for run detection and run-scoped build_explanation |
 
 ---
 

@@ -35,6 +35,7 @@
 - ✅ 09 — Skills: registry, policy, dedupe, audit, past_engagement (extracted from engine.py, 442 tests)
 - ✅ 10 — Skills: delivery rendering (render + send + schedule, 4 renderers, 3 send adapters, 1 scheduler, dedupe audit fix, 495 tests)
 - ✅ 11 — Operator slash commands (11 subcommands incl. /explain decision trail, CLI refactor, explain_chain skill, 545 tests)
+- ✅ 11.5 — Explain scoping fix: /explain scoped to latest run by default, run-boundary detection, --run/--all/--list-runs flags, cost wired to audit records, 557 tests
 
 **Prompts remaining:**
 - ⏳ 12 — Guardrail hooks
@@ -324,5 +325,5 @@ Uses default mock agents. Prints Rich tables: state-transition audit chain, BU r
 
 ---
 
-*Last updated: prompt 11 (operator slash commands — 11 subcommands incl. /explain decision trail, CLI refactor into commands/, explain_chain skill; 545 tests passing).*
+*Last updated: prompt 11.5 (explain scoping fix — /explain scoped to latest run by default; detect_runs; --run/--all/--list-runs flags; usd_estimate wired through agents → audit → totals; 557 tests passing).*
 *Next prompt: 12 — Guardrail hooks.*
