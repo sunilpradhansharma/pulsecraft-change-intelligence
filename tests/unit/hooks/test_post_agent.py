@@ -180,6 +180,21 @@ def test_hold_indefinite_skips_confidence_check():
     assert result.outcome == "pass"
 
 
+def test_communicate_plus_hold_indefinite_passes():
+    """Mixed [COMMUNICATE, HOLD_INDEFINITE] decision set should pass.
+
+    When any routing verb is present, the agent self-routed to a hold/review state.
+    The COMMUNICATE confidence check is irrelevant — the routing decision is the safeguard.
+    Regression for fixture 005: gate-1 COMMUNICATE (0.65) + gate-2 HOLD_INDEFINITE
+    was causing the pipeline to FAILED instead of HELD/AWAITING_HITL.
+    """
+    policy = _make_policy(gate_1_communicate=0.9)  # threshold well above 0.65
+    d1 = _make_decision(1, DecisionVerb.COMMUNICATE, 0.65)
+    d2 = _make_decision(2, DecisionVerb.HOLD_INDEFINITE, 0.35)
+    result = run(_ctx([d1, d2], policy=policy))
+    assert result.outcome == "pass"
+
+
 def test_archive_skips_confidence_check():
     d = _make_decision(1, DecisionVerb.ARCHIVE, 0.2)
     result = run(_ctx([d], policy=_make_policy(gate_1_communicate=0.9)))

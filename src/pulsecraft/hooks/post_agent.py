@@ -40,11 +40,14 @@ def run(ctx: HookContext) -> HookResult:
 
     failures: list[str] = []
 
-    for d in decisions:
-        if d.verb in _ROUTING_VERBS:
-            continue
-        if not check_confidence_threshold(d, policy):
-            failures.append(f"gate_{d.gate} confidence {d.confidence:.2f} below threshold")
+    # If any decision is a routing verb, the agent self-routed to a hold/review state.
+    # Confidence checks are irrelevant — the routing decision is itself the safeguard.
+    any_routing = any(d.verb in _ROUTING_VERBS for d in decisions)
+
+    if not any_routing:
+        for d in decisions:
+            if not check_confidence_threshold(d, policy):
+                failures.append(f"gate_{d.gate} confidence {d.confidence:.2f} below threshold")
 
     if message_text:
         hits = check_restricted_terms(message_text, policy)
