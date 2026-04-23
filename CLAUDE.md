@@ -39,6 +39,7 @@
 - ✅ 12 — Guardrail hooks: pre_ingest, post_agent, pre_deliver, audit_hook; HookContext/HookResult base types; config loader; 5 engine lifecycle call sites; 43 new tests (600 total)
 - ✅ 13 — First end-to-end dryrun: all 8 fixtures with real agents, 2 bugs fixed (HOLD_INDEFINITE routing verb; mixed-decision confidence semantics), dryrun report in design/dryrun/, 606 tests
 - ✅ 14 — Eval harness: per-agent variance-aware eval, 15 cases × 3 agents, classifier + runner + reporter + aggregator, baseline report (stable=10/acceptable=1/unstable=1, PASS), 619 tests
+- ✅ 14.5 — README overhaul (publication-quality front door for the repo)
 
 **Prompts remaining:**
 - *(none — P3 build sequence complete)*
@@ -378,5 +379,5 @@ Pass gate: 0 `false_positive_risk` + 0 `mismatch` = PASS. False positives are as
 
 ---
 
-*Last updated: prompt 14 (eval harness — per-agent variance-aware eval; classifier + runner + reporter + aggregator; 15 cases × 3 runs; baseline PASS stable=10/acceptable=1/unstable=1 at audit/eval/2026-04-23-baseline/; 619 tests passing).*
+*Last updated: prompt 14.5 (README overhaul — 716-line publication-quality README with Mermaid diagram, decision guides, use cases table, comparison table, roadmap; all metrics grounded in repo artifacts).*
 *P3 build sequence complete. No further prompts planned.*
