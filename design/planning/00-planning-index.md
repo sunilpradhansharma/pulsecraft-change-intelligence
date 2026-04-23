@@ -9,9 +9,9 @@
 
 **Phase:** Active implementation — schemas and config complete, agent authoring next.
 
-**Last completed:** Prompt 10 (delivery rendering skills — 4 renderers, 3 send adapters, scheduler, Jinja2 templates, dedupe audit fix; 495 tests passing).
+**Last completed:** Prompt 11 (operator slash commands — 11 CLI subcommands incl. /explain decision trail, CLI refactor into commands/, explain_chain skill; 545 tests passing).
 
-Planning phases P0–P2 are complete. The prompt-driven build sequence is at prompt 10. Prompt 11 (operator slash commands) is next.
+Planning phases P0–P2 are complete. The prompt-driven build sequence is at prompt 11. Prompt 12 (guardrail hooks) is next.
 
 ---
 
@@ -26,7 +26,7 @@ Planning phases P0–P2 are complete. The prompt-driven build sequence is at pro
 | **P4 — Schemas and contracts** | JSON schemas + Pydantic models for data contracts | ✅ Done (completed ahead of schedule in prompt 02) |
 | **P5 — Config + fixtures** | BU registry, profiles, policy, synthetic change fixtures | ✅ Done (completed ahead of schedule in prompt 03) |
 | **P6 — Skills** | Skill definitions and implementations | ⏳ Prompts 08–10 |
-| **P7 — Commands** | Slash command prompts | ⏳ Prompt 11 |
+| **P7 — Commands** | Slash command prompts | ✅ Done (prompt 11) |
 | **P8 — Hooks** | Hook definitions + policy enforcement | ⏳ Prompt 12 |
 | **P9 — Dryrun + Evals** | First end-to-end dryrun, eval harness | ⏳ Prompts 13–14 |
 
@@ -112,6 +112,11 @@ Planning phases P0–P2 are complete. The prompt-driven build sequence is at pro
 | 74 | New state transition | `src/pulsecraft/orchestrator/states.py` | 10 | (SCHEDULED, "dedupe_conflict") → AWAITING_HITL |
 | 75 | Delivery skill tests | `tests/unit/skills/delivery/` (8 test files) | 10 | 53 tests: renderers, send adapters, scheduler |
 | 76 | Delivery audit tests | `tests/unit/orchestrator/test_delivery_audit.py` | 10 | 4 end-to-end dedupe correctness tests |
+| 77 | CLI commands package | `src/pulsecraft/cli/commands/` (13 modules) | 11 | run_change, ingest, dryrun, approve, reject, edit, answer, replay, pending, digest, audit, metrics, explain |
+| 78 | explain_chain skill | `src/pulsecraft/skills/explain_chain.py` | 11 | Builds Explanation dataclass from audit chain; AgentDecisionEvent, HITLEvent, DeliveryEvent, StateTransitionEvent |
+| 79 | CLI common utilities | `src/pulsecraft/cli/common.py` | 11 | resolve_change_id, print_json_output, load_audit_writer, load_hitl_queue, format_ts, truncate |
+| 80 | CLI unit tests | `tests/unit/cli/` (3 modules) | 11 | test_resolve_change_id (7 tests), test_explain_chain (10 tests), test_metrics (4 tests) |
+| 81 | CLI integration tests | `tests/integration/cli/` (3 modules) | 11 | test_commands_smoke (12 tests), test_explain_output (10 tests), test_pending_flow (7 tests) |
 
 ---
 
@@ -186,7 +191,7 @@ All implementation happens via prompts in `/prompts/`, run one at a time in Clau
 | 08 | `prompts/08-skills-ingest.md` | Ingest adapter skills | ✅ Done |
 | 09 | `prompts/09-skills-registry-policy.md` | Registry, policy, audit skills — extracted from engine.py | ✅ Done |
 | 10 | `prompts/10-skills-delivery.md` | Delivery rendering skills | ✅ Done |
-| 11 | `prompts/11-commands.md` | Operator slash commands | ⏳ |
+| 11 | `prompts/11-commands.md` | Operator slash commands | ✅ Done |
 | 12 | `prompts/12-hooks.md` | Guardrail hooks in settings.json | ⏳ |
 | 13 | `prompts/13-dryrun-walkthrough.md` | First end-to-end dryrun | ⏳ |
 | 14 | `prompts/14-eval-harness.md` | Fixture-based evals | ⏳ |

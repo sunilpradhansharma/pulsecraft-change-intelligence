@@ -34,9 +34,9 @@
 - ✅ 08 — Skills: ingest adapters (5 adapters + normalizer + redaction + CLI restructure, 390 tests)
 - ✅ 09 — Skills: registry, policy, dedupe, audit, past_engagement (extracted from engine.py, 442 tests)
 - ✅ 10 — Skills: delivery rendering (render + send + schedule, 4 renderers, 3 send adapters, 1 scheduler, dedupe audit fix, 495 tests)
+- ✅ 11 — Operator slash commands (11 subcommands incl. /explain decision trail, CLI refactor, explain_chain skill, 545 tests)
 
 **Prompts remaining:**
-- ⏳ 11 — Operator slash commands
 - ⏳ 12 — Guardrail hooks
 - ⏳ 13 — First end-to-end dryrun
 - ⏳ 14 — Eval harness
@@ -169,7 +169,28 @@ New state transition: `(SCHEDULED, "dedupe_conflict") → AWAITING_HITL`
 
 <!-- Populated as prompt 11 lands. Each entry: command, purpose, file, producer prompt. -->
 
-*(none yet — populated in prompt 11)*
+### CLI subcommands (prompt 11)
+CLI root: `src/pulsecraft/cli/` — refactored into `commands/` with one module per command.
+
+| Command | Module | Purpose |
+|---|---|---|
+| `run-change` | `commands/run_change.py` | Run a fixture through the full mock pipeline |
+| `ingest` | `commands/ingest.py` | Ingest a source artifact into ChangeArtifact form |
+| `dryrun` | `commands/dryrun.py` | Preview pipeline decisions without side effects |
+| `approve` | `commands/approve.py` | Approve a HITL-pending change |
+| `reject` | `commands/reject.py` | Reject a HITL-pending change |
+| `edit` | `commands/edit.py` | Edit the pending payload of a HITL item |
+| `answer` | `commands/answer.py` | Answer gate-3 clarification questions |
+| `replay` | `commands/replay.py` | Re-run a completed change through the pipeline |
+| `pending` | `commands/pending.py` | List pending HITL queue items |
+| `digest` | `commands/digest.py` | Dispatch digest items that are due |
+| `audit` | `commands/audit.py` | Show full audit chain for a change_id (`--list` for all IDs) |
+| `metrics` | `commands/metrics.py` | Aggregate pipeline metrics over a time window |
+| `explain` | `commands/explain.py` | Human-readable decision trail for a change_id (demo-day command) |
+
+**Supporting skills:**
+- `explain_chain` skill: `src/pulsecraft/skills/explain_chain.py` — builds `Explanation` dataclass from audit chain; classifies records into AgentDecisionEvent, HITLEvent, DeliveryEvent, StateTransitionEvent.
+- `resolve_change_id`: `src/pulsecraft/cli/common.py` — resolves 8-char prefix to full UUID by scanning audit JSONL filenames.
 
 ## Agents authored so far
 
@@ -303,5 +324,5 @@ Uses default mock agents. Prints Rich tables: state-transition audit chain, BU r
 
 ---
 
-*Last updated: prompt 10 (delivery skills — 4 renderers, 3 send adapters, scheduler, Jinja2 templates, dedupe audit fix; 495 tests passing).*
-*Next prompt: 11 — Operator slash commands.*
+*Last updated: prompt 11 (operator slash commands — 11 subcommands incl. /explain decision trail, CLI refactor into commands/, explain_chain skill; 545 tests passing).*
+*Next prompt: 12 — Guardrail hooks.*
