@@ -76,6 +76,7 @@ testpaths = ["tests"]
 addopts = "-ra -q"
 markers = [
   "llm: tests requiring real LLM API calls (skipped by default; set PULSECRAFT_RUN_LLM_TESTS=1 to run)",
+  "eval: eval harness tests — expensive, opt-in via PULSECRAFT_RUN_EVAL_TESTS=1",
 ]
 
 [tool.coverage.run]
