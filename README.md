@@ -24,12 +24,6 @@ What makes PulseCraft different from a generic LLM pipeline is the agent-vs-code
 
 ![PulseCraft Architecture — a three-agent change intelligence pipeline with four guardrail hooks. Ingest redacts sensitive data via pre_ingest, SignalScribe interprets the change through three judgment gates, BUAtlas fans out in parallel to every affected business unit, PushPilot decides delivery timing per BU, and the pre_deliver hook enforces policy invariants before anything leaves the system. Every decision is logged to an append-only audit trail.](design/demo/gif/architecture-animation.gif)
 
-**Full-fidelity video:**
-
-https://github.com/user-attachments/assets/11269e7f-f441-4288-97f0-2048d5f0b5e7
-
-*Three LLM agents, four guardrail hooks, one deterministic orchestrator. The gif above loops the pipeline end-to-end; the video plays it at full resolution. Explore the interactive version with `pulsecraft demo serve` and click into the Architecture tab.*
-
 ---
 
 ## Demo results
@@ -668,6 +662,4 @@ Convention reminders: snake_case everywhere; no real enterprise identifiers in a
 
 ## License
 
-**Internal project. All rights reserved. External use requires written permission.**
-
-This repository contains proprietary internal tooling. It is not licensed for redistribution or modification outside the organization without written permission.
+**Internal project. All rights reserved. **
