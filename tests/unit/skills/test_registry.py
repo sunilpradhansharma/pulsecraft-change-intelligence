@@ -116,14 +116,31 @@ class TestLookupBUCandidates:
         result = lookup_bu_candidates(brief, registry)
         assert len(result) == 3
 
-    def test_keywords_not_used_in_matching(self) -> None:
-        """Keywords are in the registry but the skill only checks owned_product_areas."""
+    def test_keywords_used_as_fallback_when_no_exact_match(self) -> None:
+        """When no owned_product_area matches, keywords are tried as a fallback.
+
+        Enables recall-biased matching when SignalScribe produces plain-language
+        terms that don't match the exact registry vocabulary.
+        """
         registry = _make_registry(
             _make_entry("bu_alpha", ["specialty_pharmacy"], keywords=["prior auth", "PA"]),
         )
-        # "prior auth" is a keyword but NOT an owned_product_area
+        # "prior auth" is a keyword — falls through to keyword fallback
         brief = _make_brief(["prior auth"])
-        assert lookup_bu_candidates(brief, registry) == []
+        assert lookup_bu_candidates(brief, registry) == ["bu_alpha"]
+
+    def test_keywords_fallback_not_used_when_exact_match_exists(self) -> None:
+        """Keywords fallback is skipped when the exact pass already found candidates."""
+        registry = _make_registry(
+            _make_entry("bu_alpha", ["specialty_pharmacy"], keywords=["prior auth"]),
+            _make_entry("bu_beta", ["patient_portal"], keywords=["prior auth"]),
+        )
+        # "specialty_pharmacy" hits bu_alpha in the exact pass; keyword fallback
+        # is not run, so bu_beta is NOT added (its keyword matches but exact doesn't).
+        brief = _make_brief(["specialty_pharmacy"])
+        result = lookup_bu_candidates(brief, registry)
+        assert result == ["bu_alpha"]
+        assert "bu_beta" not in result
 
     def test_pre_filter_returns_multiple_bus_when_impact_spans_shared_areas(self) -> None:
         """Regression: shared areas in bu_registry must yield multiple BU candidates."""

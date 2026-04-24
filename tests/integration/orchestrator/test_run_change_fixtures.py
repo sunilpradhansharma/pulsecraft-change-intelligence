@@ -544,6 +544,30 @@ class TestFixture006MultiBUMixed:
         result = _run_outside_quiet_hours(orch, artifact)
         assert len(result.personalized_briefs) >= 2
 
+    def test_analytics_vocabulary_does_not_produce_no_candidate_bus(self, tmp_path: Path) -> None:
+        """Regression guard (15.6.1): fixture 006 must find ≥1 BU even when
+        SignalScribe produces plain-language impact_areas like 'analytics' and
+        'reporting' instead of the exact registry terms 'analytics_portal' and
+        'reporting_dashboard'. Fixed by adding keyword-match fallback to
+        lookup_bu_candidates.
+        """
+        artifact = _load_fixture("change_006_multi_bu_affected_vs_adjacent.json")
+        # Simulate the vocabulary SignalScribe used in the failing 23:37 run
+        change_brief = _communicate_ripe_ready_brief(
+            artifact.change_id,
+            impact_areas=["analytics", "reporting", "dashboard"],
+        )
+        orch, _ = _make_orchestrator(
+            tmp_path,
+            signalscribe=MockSignalScribe(script={artifact.change_id: change_brief}),
+        )
+        result = _run_outside_quiet_hours(orch, artifact)
+        assert result.terminal_state != WorkflowState.ARCHIVED, (
+            "Fixture 006 must not be ARCHIVED with no_candidate_bus when "
+            "impact_areas contain analytics-domain keywords"
+        )
+        assert len(result.personalized_briefs) >= 1
+
 
 class TestFixture007MLRSensitive:
     """Fixture 007: MLR-sensitive terms in draft → AWAITING_HITL."""
