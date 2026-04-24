@@ -34,6 +34,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   overflow: hidden;
+  position: relative; /* anchor for absolute-positioned replay button */
 }
 
 #arch-svg {
@@ -176,32 +177,62 @@
   background: rgba(255,255,255,0.7);
 }
 
-/* ── Replay button ────────────────────────────────────────────────────────── */
+/* ── Replay button — absolute-positioned inside diagram canvas ────────────── */
 
 .arch-replay-btn {
-  align-self: flex-start;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 14px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-hover);
+  padding: 8px 14px;
+  background: #FFFFFF;
+  border: 1px solid #C9C1B0;
   border-radius: var(--r-md);
   font-family: 'Inter', sans-serif;
   font-size: 13px;
   font-weight: 500;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all var(--dur-snap) var(--ease-std);
+  transition: all 180ms var(--ease-std);
+  box-shadow: 0 1px 4px rgba(31,29,24,0.06);
 }
 .arch-replay-btn:hover {
-  background: var(--bg-subtle);
+  background: var(--bg-warm);
   color: var(--text-primary);
   border-color: var(--text-secondary);
 }
 .arch-replay-btn:focus-visible {
   outline: 2px solid var(--color-ss);
   outline-offset: 2px;
+}
+
+/* ── Agent-vs-code principle callout ─────────────────────────────────────── */
+
+.arch-callout {
+  background: #F8F3E8;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 28px 36px;
+}
+
+.arch-callout__principle {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.arch-callout__explanation {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin: 0;
 }
 
 /* ── Reduced motion ───────────────────────────────────────────────────────── */
