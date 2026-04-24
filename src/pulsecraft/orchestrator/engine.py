@@ -416,7 +416,7 @@ class Orchestrator:
         Both the agent's original preference and the override are logged.
         The returned PushPilotOutput may differ from the input.
         """
-        now_utc = datetime.now(UTC)
+        now_utc = _utcnow()
         agent_decision = output.decision
         final_output = output
 
@@ -1244,36 +1244,39 @@ class Orchestrator:
         for bu_id, output in delivery_outputs.items():
             pb = worth_sending[bu_id]
             bu_profile = get_bu_profile(bu_id)
-            try:
-                _cp = get_channel_policy()
-            except Exception:
-                _cp = None
-            _pd_ctx = HookContext(
-                stage="pre_deliver",
-                change_id=change_id,
-                payload={
-                    "channel": str(output.channel) if output.channel else "unspecified",
-                    "bu_profile": bu_profile,
-                    "channel_policy": _cp,
-                },
-            )
-            _pd_result = self._invoke_hook("pre_deliver", _pd_ctx)
-            self._emit(on_event, "hook_fired", stage="pre_deliver", name=f"pre_deliver_{bu_id}",
-                       outcome=_pd_result.outcome, reason=_pd_result.reason or "")
-            if _pd_result.outcome == "fail":
-                _pd_reg = self._hooks.get("pre_deliver")
-                if _pd_reg and _pd_reg.fail == "closed":
-                    state = self._transition(
-                        change_id,
-                        state,
-                        "error",
-                        f"pre_deliver blocked for {bu_id}: {_pd_result.reason}",
-                    )
-                    result.terminal_state = state
-                    result.errors.append(_pd_result.reason)
-                    result.audit_record_count = self._audit.record_count(change_id)
-                    self._emit(on_event, "terminal_state", state=str(state), bu_outcomes=[], total_cost_usd=0.0, elapsed_s=0.0)
-                    return result
+            # pre_deliver hook only guards actual sends; HOLD_UNTIL/DIGEST are scheduled for later
+            if output.decision == DeliveryDecision.SEND_NOW:
+                try:
+                    _cp = get_channel_policy()
+                except Exception:
+                    _cp = None
+                _pd_ctx = HookContext(
+                    stage="pre_deliver",
+                    change_id=change_id,
+                    payload={
+                        "channel": str(output.channel) if output.channel else "unspecified",
+                        "bu_profile": bu_profile,
+                        "channel_policy": _cp,
+                        "now_utc": _utcnow(),
+                    },
+                )
+                _pd_result = self._invoke_hook("pre_deliver", _pd_ctx)
+                self._emit(on_event, "hook_fired", stage="pre_deliver", name=f"pre_deliver_{bu_id}",
+                           outcome=_pd_result.outcome, reason=_pd_result.reason or "")
+                if _pd_result.outcome == "fail":
+                    _pd_reg = self._hooks.get("pre_deliver")
+                    if _pd_reg and _pd_reg.fail == "closed":
+                        state = self._transition(
+                            change_id,
+                            state,
+                            "error",
+                            f"pre_deliver blocked for {bu_id}: {_pd_result.reason}",
+                        )
+                        result.terminal_state = state
+                        result.errors.append(_pd_result.reason)
+                        result.audit_record_count = self._audit.record_count(change_id)
+                        self._emit(on_event, "terminal_state", state=str(state), bu_outcomes=[], total_cost_usd=0.0, elapsed_s=0.0)
+                        return result
             _decision_str, is_dedupe_conflict = self._execute_delivery(
                 change_id, bu_id, output, pb, bu_profile
             )

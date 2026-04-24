@@ -122,6 +122,7 @@ profiles:
       - site_management_portal
       - lab_results_integration
       - reporting
+      - reporting_dashboard
     preferences:
       channels:
         - teams
@@ -157,6 +158,8 @@ profiles:
       - field_force_portal
       - sample_management
       - notification_services
+      - hcp_portal_ordering
+      - analytics_portal
     preferences:
       channels:
         - teams

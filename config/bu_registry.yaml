@@ -70,6 +70,7 @@ bus:
       - site_management_portal
       - lab_results_integration
       - reporting
+      - reporting_dashboard  # shared with bu_zeta: clinical trial enrollment reports live in the reporting dashboard
     keywords:
       - clinical trial
       - site management
@@ -86,6 +87,8 @@ bus:
       - field_force_portal
       - sample_management
       - notification_services
+      - hcp_portal_ordering   # shared with bu_alpha: field reps submit orders via the HCP ordering portal
+      - analytics_portal      # shared with bu_zeta: field force portal embeds the analytics portal for rep performance views
     keywords:
       - field force
       - sales portal

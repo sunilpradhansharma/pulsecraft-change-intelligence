@@ -8,6 +8,7 @@ import json
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
+from unittest.mock import patch
 
 from pulsecraft.orchestrator.audit import AuditWriter
 from pulsecraft.orchestrator.engine import Orchestrator
@@ -62,6 +63,22 @@ def _make_orchestrator(
     return orch, audit
 
 
+# 14:00 UTC = 09:00 CDT — safely outside quiet hours for all BUs in the registry
+_MIDDAY_UTC = datetime(2026, 4, 23, 14, 0, 0, tzinfo=UTC)
+
+_ENGINE_UTCNOW = "pulsecraft.orchestrator.engine._utcnow"
+
+
+def _run_outside_quiet_hours(orch: "Orchestrator", artifact: "ChangeArtifact") -> "RunResult":  # type: ignore[name-defined]
+    """Run the orchestrator with _utcnow fixed to a business-hours time.
+
+    This avoids quiet-hours overrides that make delivery-terminal-state tests
+    time-sensitive. Use for tests that assert DELIVERED or DIGESTED.
+    """
+    with patch(_ENGINE_UTCNOW, return_value=_MIDDAY_UTC):
+        return orch.run_change(artifact)
+
+
 def _now() -> datetime:
     return datetime.now(tz=UTC)
 
@@ -78,7 +95,9 @@ def _pp_agent() -> DecisionAgent:
     return DecisionAgent(name="pushpilot", version="mock-1.0")
 
 
-def _communicate_ripe_ready_brief(change_id: str) -> ChangeBrief:
+def _communicate_ripe_ready_brief(
+    change_id: str, impact_areas: list[str] | None = None
+) -> ChangeBrief:
     now = _now()
     agent = _ss_agent()
     return ChangeBrief(
@@ -90,7 +109,7 @@ def _communicate_ripe_ready_brief(change_id: str) -> ChangeBrief:
         before="old state",
         after="new state",
         change_type=ChangeType.BEHAVIOR_CHANGE,
-        impact_areas=["specialty_pharmacy", "hcp_portal_ordering"],
+        impact_areas=impact_areas if impact_areas is not None else ["specialty_pharmacy", "hcp_portal_ordering"],
         affected_segments=["hcp_users"],
         timeline=Timeline(status=TimelineStatus.RIPE),
         required_actions=[],
@@ -370,25 +389,25 @@ class TestFixture001ClearcutCommunicate:
     def test_terminal_state_is_delivered(self, tmp_path: Path) -> None:
         artifact = _load_fixture("change_001_clearcut_communicate.json")
         orch, audit = _make_orchestrator(tmp_path)
-        result = orch.run_change(artifact)
+        result = _run_outside_quiet_hours(orch, artifact)
         assert result.terminal_state == WorkflowState.DELIVERED
 
     def test_audit_records_written(self, tmp_path: Path) -> None:
         artifact = _load_fixture("change_001_clearcut_communicate.json")
         orch, audit = _make_orchestrator(tmp_path)
-        result = orch.run_change(artifact)
+        result = _run_outside_quiet_hours(orch, artifact)
         assert result.audit_record_count >= 5
 
     def test_hitl_not_queued(self, tmp_path: Path) -> None:
         artifact = _load_fixture("change_001_clearcut_communicate.json")
         orch, audit = _make_orchestrator(tmp_path)
-        result = orch.run_change(artifact)
+        result = _run_outside_quiet_hours(orch, artifact)
         assert not result.hitl_queued
 
     def test_personalized_briefs_populated(self, tmp_path: Path) -> None:
         artifact = _load_fixture("change_001_clearcut_communicate.json")
         orch, audit = _make_orchestrator(tmp_path)
-        result = orch.run_change(artifact)
+        result = _run_outside_quiet_hours(orch, artifact)
         assert len(result.personalized_briefs) > 0
 
 
@@ -509,21 +528,21 @@ class TestFixture005MuddledNeedClarification:
 
 
 class TestFixture006MultiBUMixed:
-    """Fixture 006: mixed BU results — bu_alpha AFFECTED, others NOT_AFFECTED → DELIVERED."""
+    """Fixture 006: mixed BU results — bu_alpha and bu_epsilon AFFECTED, others NOT_AFFECTED → DELIVERED."""
 
-    def test_terminal_state_is_delivered_with_one_affected_bu(self, tmp_path: Path) -> None:
+    def test_terminal_state_is_delivered(self, tmp_path: Path) -> None:
         artifact = _load_fixture("change_006_multi_bu_affected_vs_adjacent.json")
         # Default SignalScribe uses impact_areas=["specialty_pharmacy", "hcp_portal_ordering"]
-        # bu_alpha owns both → AFFECTED; others will be NOT_AFFECTED by default
+        # bu_alpha and bu_epsilon both own hcp_portal_ordering → both AFFECTED
         orch, _ = _make_orchestrator(tmp_path)
-        result = orch.run_change(artifact)
+        result = _run_outside_quiet_hours(orch, artifact)
         assert result.terminal_state == WorkflowState.DELIVERED
 
     def test_multiple_bus_evaluated(self, tmp_path: Path) -> None:
         artifact = _load_fixture("change_006_multi_bu_affected_vs_adjacent.json")
         orch, _ = _make_orchestrator(tmp_path)
-        result = orch.run_change(artifact)
-        assert len(result.personalized_briefs) > 0
+        result = _run_outside_quiet_hours(orch, artifact)
+        assert len(result.personalized_briefs) >= 2
 
 
 class TestFixture007MLRSensitive:
@@ -564,7 +583,8 @@ class TestFixture008PostHocAlreadyShipped:
 
     def test_terminal_state_is_digested(self, tmp_path: Path) -> None:
         artifact = _load_fixture("change_008_post_hoc_already_shipped.json")
-        change_brief = _communicate_ripe_ready_brief(artifact.change_id)
+        # Use impact_areas that only match bu_alpha so the scripted DIGEST is the sole outcome
+        change_brief = _communicate_ripe_ready_brief(artifact.change_id, impact_areas=["specialty_pharmacy"])
 
         # Script BUAtlas for bu_alpha → AFFECTED+WORTH_SENDING
         now = _now()
