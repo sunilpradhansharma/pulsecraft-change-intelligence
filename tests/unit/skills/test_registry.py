@@ -161,3 +161,21 @@ class TestLookupBUCandidates:
         assert len(result_001) >= 2, f"Expected ≥2 BUs for HCP portal change, got: {result_001}"
         assert "bu_alpha" in result_001
         assert "bu_epsilon" in result_001  # field reps submit orders via the HCP ordering portal
+
+    def test_space_separated_phrases_match_snake_case_areas(self) -> None:
+        """Regression guard (prompt 15.6.2): SignalScribe sometimes emits two-word phrases
+        like 'analytics portal' instead of the registered 'analytics_portal'.
+        The pre-filter must normalise spaces→underscores before matching.
+        """
+        from pulsecraft.config import get_bu_registry
+
+        registry = get_bu_registry()
+
+        # Exactly the vocabulary SignalScribe used in the failing 01:16 / 13:00 / 13:01 runs
+        brief_spaced = _make_brief(["analytics portal", "reporting dashboard"])
+        result = lookup_bu_candidates(brief_spaced, registry)
+        assert len(result) >= 2, (
+            f"Space-separated phrases must match snake_case owned_product_areas; got: {result}"
+        )
+        assert "bu_zeta" in result
+        assert "bu_delta" in result or "bu_epsilon" in result

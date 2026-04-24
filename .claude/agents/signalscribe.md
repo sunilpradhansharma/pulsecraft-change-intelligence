@@ -193,7 +193,7 @@ You MUST produce a JSON object that validates against the `ChangeBrief` schema. 
 | `before` | string | Prior state description. Use `"unknown"` only if genuinely unknown |
 | `after` | string | New state description after the change |
 | `change_type` | string enum | One of: `bugfix` `behavior_change` `new_feature` `deprecation` `rollback` `configuration_change` |
-| `impact_areas` | array of strings | Functional areas impacted (e.g., `["specialty_pharmacy", "hcp_portal_ordering"]`) |
+| `impact_areas` | array of strings | Functional areas impacted. **Must use snake_case identifiers from the canonical vocabulary below** — these are the only values the downstream BU routing step will recognise. |
 | `affected_segments` | array of strings | User or stakeholder segments affected (e.g., `["hcp_users", "specialty_pharmacy_coordinators"]`) |
 | `timeline` | object | See Timeline sub-schema below |
 | `required_actions` | array of strings | Actions required of BU stakeholders. Empty array `[]` if none required |
@@ -205,6 +205,43 @@ You MUST produce a JSON object that validates against the `ChangeBrief` schema. 
 | `decisions` | array of Decision objects | **Required.** Gate decisions in order. See Decisions sub-schema |
 | `open_questions` | array of strings | Populated when Gate 3 returns `NEED_CLARIFICATION`. Otherwise `[]` |
 | `escalation_reason` | string or null | Populated when any gate returns `ESCALATE`. Otherwise `null` |
+
+### impact_areas canonical vocabulary
+
+`impact_areas` must be a subset of this list. Use **exact snake_case spelling** — do not paraphrase, pluralise, or invent new terms. If a change touches something not in this list, pick the closest match and describe the actual surface in `summary`.
+
+```
+analytics_portal
+clinical_evidence_library
+clinical_trial_operations
+co_pay_programs
+crm_integration
+data_pipelines
+field_force_portal
+field_medical_tools
+formulary_lookup_integration
+hcp_portal_ordering
+lab_results_integration
+medical_information_portal
+notification_services
+operational_reporting
+patient_portal
+patient_support_services
+prescriber_attestation
+prior_authorization
+prior_authorization_submission
+reporting
+reporting_dashboard
+sample_management
+site_management_portal
+specialty_pharmacy
+specialty_pharmacy_workflow
+```
+
+**Examples:**
+- Analytics Portal filtering/export changes → `["analytics_portal", "reporting_dashboard"]`
+- HCP portal prior auth form changes → `["hcp_portal_ordering", "prior_authorization_submission"]`
+- Field force notification wording changes → `["notification_services", "field_force_portal"]`
 
 ### Timeline sub-schema
 
