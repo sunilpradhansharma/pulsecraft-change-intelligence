@@ -58,6 +58,7 @@
 - ✅ 16.1.2 — Architecture tab text truncation fix: Terminal state subtitle AWAITING_HITL→AWAITING (fits SVG viewbox); edge labels per-BU briefs→briefs, preference→pref (fit within node-gap bounds); 642 tests
 - ✅ 16.1.3 — Terminal subtitle drops ·FAILED (fits cleanly); entrance animation restructured to interleaved node/edge sequence (~9.5s, narration-paced); replay button shows Replaying… disabled state; reduced-motion collapses to 200ms fades; 642 tests
 - ✅ 16.1.4 — Hide orphan arrow markers during entrance animation: marker-end set to none at animation start, restored per-edge when its stroke-dashoffset draw completes; reduced-motion path restores markers immediately; replay re-hides markers cleanly; 642 tests
+- ✅ 16.2 — Architecture animation gif embedded in README: 553KB, 18fps, 1100px wide, 192-color palette, trimmed to 11.5s animation window; raw .mov preserved; "How PulseCraft works" section added between Overview and Demo results; test badge updated to 642; 642 tests
 
 **Prompts remaining:**
 - *(none — P3 build sequence + demo complete)*
@@ -398,5 +399,5 @@ Pass gate: 0 `false_positive_risk` + 0 `mismatch` = PASS. False positives are as
 
 ---
 
-*Last updated: prompt 16.1.4 (Orphan arrow markers hidden during animation; restored per-edge on draw complete; 642 tests).*
+*Last updated: prompt 16.2 (Architecture animation gif in README; 553KB palette-optimized; 642 tests).*
 *P3 build sequence + demo complete.*
