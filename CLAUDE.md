@@ -53,6 +53,8 @@
 - ✅ 15.6.3 — Demo polish (4 issues): skeleton placeholders cleaned at terminal state; AWAITING_HITL heading deduplication (trigger type in section bar); PushPilot section consolidated to single section-pushpilot; BUAtlas prompt updated with P0/P1 examples to reduce bu_gamma P0 variance; 640 tests
 - ✅ 15.6.4 — Demo polish (3 issues): PushPilot shimmer removed (0 loading shimmers, decisions arrive per-BU); duplicate terminal heading fixed for all states (ARCHIVED/DELIVERED/HELD section bar now blank, body heading is sole state title); PushPilot confidence bar removed (Path A — no confidence in event, timing decision needs no score); 640 tests
 - ✅ 16 — Architecture tab: interactive animated SVG diagram (9 nodes, edge draw animation, entrance choreography), hover/click detail panel grounded in actual codebase content, tab switching, replay button, keyboard nav, reduced-motion support; 5 new tests (642 total)
+- ✅ 16.1 — Architecture tab surgical fixes: hitl_eval pseudo-node removed (buatlas→pushpilot direct edge); BUAtlas stacked-card ghost rects signal asyncio fan-out; agent-vs-code principle callout added; replay button moved into canvas as absolute top-right; 642 tests
+- ✅ 16.1.1 — Replay button overlap fix: moved from position:absolute inside canvas to flex sibling of heading text in #arch-heading; eliminates overlap with pre_deliver node at all viewport widths; 642 tests
 
 **Prompts remaining:**
 - *(none — P3 build sequence + demo complete)*
@@ -393,5 +395,5 @@ Pass gate: 0 `false_positive_risk` + 0 `mismatch` = PASS. False positives are as
 
 ---
 
-*Last updated: prompt 16 (Architecture tab — interactive SVG diagram, detail panel, tab switching; 642 tests).*
+*Last updated: prompt 16.1.1 (Replay button moved to header flex row; 642 tests).*
 *P3 build sequence + demo complete.*
