@@ -271,6 +271,7 @@ function _drawEdges() {
     path.setAttribute('fill', 'none');
     if (isDashed) path.setAttribute('stroke-dasharray', isAudit ? '3 4' : '6 4');
     path.setAttribute('marker-end', markerUrl);
+    path.dataset.markerUrl = markerUrl;
     path.setAttribute('class', `arch-edge arch-edge--${style}`);
     path.dataset.edgeIndex = i;
     path.style.strokeDasharray = len;
@@ -539,6 +540,8 @@ function _runEntrance() {
     _svg.querySelectorAll('.arch-edge').forEach(e => {
       e.style.transition = 'stroke-dashoffset 200ms ease';
       e.style.strokeDashoffset = '0';
+      const mu = e.dataset.markerUrl;
+      if (mu) e.setAttribute('marker-end', mu);
     });
     _svg.querySelectorAll('.arch-edge-label').forEach(l => {
       l.style.transition = 'opacity 200ms ease';
@@ -549,6 +552,9 @@ function _runEntrance() {
   }
 
   // ── Full animation — interleaved nodes + edges (~9.5 s total) ────────
+
+  // Hide all markers up front — restored per-edge when draw completes
+  _svg.querySelectorAll('.arch-edge').forEach(e => e.setAttribute('marker-end', 'none'));
 
   const NODE_DUR = 650; // node pop-in transition (ms)
   const EDGE_DUR = 550; // base arrow-draw duration (ms)
@@ -569,6 +575,9 @@ function _runEntrance() {
       if (!el) return;
       el.style.transition = `stroke-dashoffset ${dur}ms cubic-bezier(0.4,0,0.2,1)`;
       el.style.strokeDashoffset = '0';
+      // Reveal marker head once the line has drawn
+      const mu = el.dataset.markerUrl;
+      if (mu) setTimeout(() => el.setAttribute('marker-end', mu), dur);
     }, at);
   }
 
