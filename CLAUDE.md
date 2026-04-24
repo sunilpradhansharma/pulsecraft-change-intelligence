@@ -47,6 +47,7 @@
 - ✅ 15.5.2 — buatlas_fanout_sync fix: missing factory lambda; welcome state hides immediately on scenario click; 636 tests
 - ✅ 15.5.3 — BU pre-filter fix: disjoint bu_registry meant only one BU ever matched; added shared areas to bu_delta/bu_epsilon; pre_deliver hook now only fires for SEND_NOW; integration tests made time-insensitive; 637 tests
 - ✅ 15.7 — Documentation update: README demo results section (6 screenshots, 2 scenarios), 14th CLI subcommand (demo serve), test count and roadmap fixes, planning index catch-up (prompts 15.5–15.5.3)
+- ✅ 15.6 — Demo visual rebuild: full-canvas layout (300px sidebar, 900px doc, 60px rail, 50px h-pad, 1440px max-width), animation system (card-enter, drift, draw-line, rail-pulse, shimmer), welcome-state animated exit, STATE_META terminal titles, PushPilot SVG connector arrow, ARCHIVED blockquote treatment, 637 tests unchanged
 
 **Prompts remaining:**
 - *(none — P3 build sequence + demo complete)*
@@ -387,5 +388,5 @@ Pass gate: 0 `false_positive_risk` + 0 `mismatch` = PASS. False positives are as
 
 ---
 
-*Last updated: prompt 15.7 (documentation update — README demo results section with 6 screenshots, planning index catch-up for prompts 15.5–15.5.3, test count and roadmap fixes, demo serve listed as 14th CLI subcommand; 637 tests).*
+*Last updated: prompt 15.6 (demo visual rebuild — full-canvas layout, animation system, welcome-state animated exit, STATE_META terminal titles, PushPilot SVG connector, ARCHIVED blockquote treatment; 637 tests unchanged).*
 *P3 build sequence + demo complete.*
