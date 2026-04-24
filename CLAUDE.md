@@ -45,6 +45,7 @@
 - ✅ 15.5 — Demo sidebar fix: scenario cards not rendering due to JS SyntaxError (missing `)` in escHtml call); regression test added; 635 tests
 - ✅ 15.5.1 — HITLQueue fix: instrumented_run called HITLQueue() with no args; pass audit_writer; try/except wraps _run_pipeline; 636 tests
 - ✅ 15.5.2 — buatlas_fanout_sync fix: missing factory lambda; welcome state hides immediately on scenario click; 636 tests
+- ✅ 15.5.3 — BU pre-filter fix: disjoint bu_registry meant only one BU ever matched; added shared areas to bu_delta/bu_epsilon; pre_deliver hook now only fires for SEND_NOW; integration tests made time-insensitive; 637 tests
 
 **Prompts remaining:**
 - *(none — P3 build sequence + demo complete)*
@@ -384,5 +385,5 @@ Pass gate: 0 `false_positive_risk` + 0 `mismatch` = PASS. False positives are as
 
 ---
 
-*Last updated: prompt 15.5.2 (buatlas_fanout_sync fix — missing factory lambda crashed pipeline after SignalScribe; welcome state now hides immediately on scenario click; 636 tests).*
+*Last updated: prompt 15.5.3 (BU pre-filter fix — disjoint bu_registry meant only one BU ever matched per change; added shared areas to bu_delta/bu_epsilon so scenario 006 now evaluates 3 BUs in parallel; pre_deliver hook scoped to SEND_NOW only; integration tests made time-insensitive; 637 tests).*
 *P3 build sequence + demo complete.*

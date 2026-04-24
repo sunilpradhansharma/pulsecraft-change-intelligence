@@ -9,7 +9,7 @@
 
 **Phase:** Active implementation — schemas and config complete, agent authoring next.
 
-**Last completed:** Prompt 15.5.2 (buatlas_fanout_sync fix — missing factory lambda crashed pipeline after SignalScribe; welcome state now hides immediately on scenario click; 636 tests passing).
+**Last completed:** Prompt 15.5.3 (BU pre-filter fix — disjoint bu_registry meant only one BU ever matched per change; added shared areas to bu_delta/bu_epsilon so scenario 006 evaluates 3 BUs in parallel; 637 tests passing).
 
 Planning phases P0–P2 are complete. The prompt-driven build sequence is complete through prompt 15.5. P3 build sequence + demo are done.
 
