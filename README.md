@@ -3,7 +3,7 @@
 > AI agents that turn marketplace changes into BU-ready notifications — with safety gates, audit trails, and human-in-the-loop review.
 
 [![Python](https://img.shields.io/badge/python-3.14-blue)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-637%20passing-brightgreen)](#testing)
+[![Tests](https://img.shields.io/badge/tests-642%20passing-brightgreen)](#testing)
 [![Model](https://img.shields.io/badge/model-claude--sonnet--4--6-orange)](https://docs.anthropic.com/en/docs/about-claude/models/overview)
 [![License](https://img.shields.io/badge/license-internal-red)](#license)
 [![Status](https://img.shields.io/badge/status-walking%20skeleton-yellow)](#roadmap)
@@ -17,6 +17,14 @@ BU heads at scale miss important changes or drown in irrelevant ones. Vendor rel
 PulseCraft solves this with three specialist LLM agents collaborating at six judgment gates, wrapped in a deterministic orchestrator and four guardrail hooks. The system's default answer is always "don't send" — it takes affirmative signals at every gate to produce a notification. SignalScribe interprets the change artifact and decides whether it's worth communicating, whether the timing is right, and whether the interpretation is clear enough to act on. BUAtlas runs in parallel per candidate BU, deciding whether each BU is genuinely affected and whether the drafted message is worth that BU head's attention. PushPilot decides whether now is the right time to deliver.
 
 What makes PulseCraft different from a generic LLM pipeline is the agent-vs-code split: agents express preference, code enforces invariants. PushPilot can say `SEND_NOW` and the `pre_deliver` hook will still enforce quiet hours, rate limits, and MLR-term restrictions — and log both the agent's preference and the code override. Every decision is logged to an append-only audit trail and replayable via `pulsecraft explain <change-id>`. Current state: walking skeleton on synthetic data, ~$0.08 per change end-to-end on the dryrun set.
+
+---
+
+## How PulseCraft works
+
+![PulseCraft Architecture — a three-agent change intelligence pipeline with four guardrail hooks. Ingest redacts sensitive data via pre_ingest, SignalScribe interprets the change through three judgment gates, BUAtlas fans out in parallel to every affected business unit, PushPilot decides delivery timing per BU, and the pre_deliver hook enforces policy invariants before anything leaves the system. Every decision is logged to an append-only audit trail.](design/demo/gif/architecture-animation.gif)
+
+*Three LLM agents, four guardrail hooks, one deterministic orchestrator. The animation above shows the full pipeline building stage by stage. Explore the interactive version with `pulsecraft demo serve` and click any node to see its role.*
 
 ---
 
