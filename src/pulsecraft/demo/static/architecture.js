@@ -89,7 +89,7 @@ const ARCH = {
     terminal: {
       id: 'terminal',
       label: 'Terminal state',
-      sub: 'DELIVERED · ARCHIVED · HELD · AWAITING_HITL',
+      sub: 'DELIVERED · ARCHIVED · HELD · AWAITING · FAILED',
       color: 'ok',
       cx: 1000, cy: 190,
       detail: {
@@ -118,8 +118,8 @@ const ARCH = {
     { from: 'ingest',       to: 'signalscribe', label: 'artifact' },
     { from: 'signalscribe', to: 'post_ss',       label: 'decisions' },
     { from: 'post_ss',      to: 'buatlas',       label: 'brief' },
-    { from: 'buatlas',      to: 'pushpilot',     label: 'per-BU briefs' },
-    { from: 'pushpilot',    to: 'pre_deliver',   label: 'preference' },
+    { from: 'buatlas',      to: 'pushpilot',     label: 'briefs' },
+    { from: 'pushpilot',    to: 'pre_deliver',   label: 'pref' },
     { from: 'pre_deliver',  to: 'terminal',      label: 'enforce' },
     { from: 'signalscribe', to: 'terminal',      label: 'ARCHIVE/HOLD', style: 'dashed', shortcut: true },
     { from: 'ingest',       to: 'audit',         label: '', style: 'audit' },
