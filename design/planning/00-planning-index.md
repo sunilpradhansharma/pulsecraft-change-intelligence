@@ -9,9 +9,9 @@
 
 **Phase:** Active implementation — schemas and config complete, agent authoring next.
 
-**Last completed:** Prompt 15.6.2 (space-normalisation + SignalScribe vocabulary grounding; "analytics portal" → "analytics_portal" in pre-filter; 25-term canonical vocabulary injected into SignalScribe prompt; 640 tests).
+**Last completed:** Prompt 16.5 (wire up View audit trail button; inline audit panel with GET /api/audit/<change_id>; 652 tests).
 
-Planning phases P0–P2 are complete. The prompt-driven build sequence is complete through prompt 15.6.2. P3 build sequence + demo are done.
+Planning phases P0–P2 are complete. The prompt-driven build sequence is complete through prompt 16.5. P3 build sequence + demo are done.
 
 ---
 
@@ -148,6 +148,7 @@ Planning phases P0–P2 are complete. The prompt-driven build sequence is comple
 | 110 | Multi-BU pre-filter fix | `src/pulsecraft/skills/registry.py`, `tests/unit/skills/test_registry.py`, `tests/integration/orchestrator/test_run_change_fixtures.py` | 15.6.1 | Keyword-match fallback in lookup_bu_candidates: when exact owned_product_areas pass finds no candidates, try normalized keyword equality; fixes scenario 006 ARCHIVED with no_candidate_bus when SignalScribe produces plain-language impact_areas; 639 tests |
 | 111 | Space-normalisation + vocab grounding | `src/pulsecraft/skills/registry.py`, `tests/unit/skills/test_registry.py`, `.claude/agents/signalscribe.md` | 15.6.2 | Primary pass now normalises space-separated phrases to snake_case ("analytics portal" → "analytics_portal") before exact matching; SignalScribe prompt injected with 25-term canonical vocabulary; 640 tests |
 | 112 | How it works scrollytelling tab | `src/pulsecraft/demo/static/how-it-works.js`, `how-it-works.css`, `app.js`, `index.html`, `tests/demo/test_server_routes.py` | 17 | Three-chapter narrative tab: problem (word-reveal headline + signal noise grid), pipeline (three agent cards with color bars, agent-vs-code quote callout), humans-in-the-loop (HITL triggers, audit trail, two closing CTAs); IntersectionObserver scroll reveals; prefers-reduced-motion; 647 tests |
+| 113 | Wire up View audit trail button | `src/pulsecraft/demo/static/app.js`, `style.css`, `src/pulsecraft/demo/server.py`, `tests/demo/test_server_routes.py` | 16.5 | Inline audit panel opens below terminal state; GET /api/audit/<change_id> route with UUID regex validation; actor pills (ss/ba/pp/hook/orch); records grouped by stage; max-height CSS transition; 5 new route tests; 652 tests |
 
 ---
 
@@ -237,6 +238,15 @@ All implementation happens via prompts in `/prompts/`, run one at a time in Clau
 | 15.6 | `prompts/15.6-demo-visual-rebuild.md` | Demo visual rebuild: full-canvas layout, animation system, welcome exit, STATE_META titles, PushPilot SVG connector, ARCHIVED blockquote; 637 tests unchanged | ✅ Done |
 | 15.6.1 | `prompts/15.6.1-multi-bu-regression-fix.md` | Multi-BU pre-filter fix: keyword-match fallback in lookup_bu_candidates; regression test for analytics vocabulary; 639 tests | ✅ Done |
 | 15.6.2 | `prompts/15.6.2-signalscribe-vocabulary-grounding.md` | Space-normalisation + SignalScribe vocab grounding: "analytics portal" → "analytics_portal" in pre-filter; 25-term canonical vocab in SignalScribe prompt; 640 tests | ✅ Done |
+| 15.6.3 | *(inline)* | Demo polish (4 issues): skeleton cleanup; AWAITING_HITL heading deduplication; PushPilot section consolidation; BUAtlas P0/P1 examples; 640 tests | ✅ Done |
+| 15.6.4 | *(inline)* | Demo polish (3 issues): PushPilot shimmer removed; duplicate terminal heading fixed; confidence bar removed; 640 tests | ✅ Done |
+| 16 | `prompts/16-architecture-tab.md` | Architecture tab: animated SVG diagram, hover/click detail panel, tab switching, replay button, keyboard nav, reduced-motion; 642 tests | ✅ Done |
+| 16.1 | *(inline)* | Architecture tab surgical fixes: hitl_eval node removed; BUAtlas ghost rects; agent-vs-code callout; replay button repositioned; 642 tests | ✅ Done |
+| 16.1.1–16.1.4 | *(inline)* | Replay overlap, text truncation, animation restructure, orphan arrow marker fixes; 642 tests | ✅ Done |
+| 16.2 | *(inline)* | Architecture animation gif embedded in README; "How PulseCraft works" section; test badge updated; 642 tests | ✅ Done |
+| 16.3 | *(inline)* | GitHub-hosted .mp4 link added to README; .mov swapped for .mp4; 642 tests | ✅ Done |
+| 17 | `prompts/17-how-it-works-tab.md` | How it works scrollytelling tab: 3-chapter narrative, word-reveal, agent cards, HITL triggers, audit preview, two CTAs; 647 tests | ✅ Done |
+| 16.5 | `prompts/16.5-audit-trail-button.md` | Wire up View audit trail button: inline panel, GET /api/audit/<change_id>, UUID validation, actor pills, stage grouping, 5 route tests; 652 tests | ✅ Done |
 
 ---
 
