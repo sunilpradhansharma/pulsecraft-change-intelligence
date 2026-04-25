@@ -2,12 +2,20 @@
 
 from __future__ import annotations
 
-from unittest.mock import patch
+from datetime import datetime, timezone
+from unittest.mock import MagicMock, patch
 
 from fastapi.testclient import TestClient
 
 from pulsecraft.demo.events import Event
 from pulsecraft.demo.server import app
+from pulsecraft.schemas.audit_record import (
+    Actor,
+    ActorType,
+    AuditOutcome,
+    AuditRecord,
+    EventType,
+)
 
 client = TestClient(app)
 
@@ -196,3 +204,89 @@ class TestArchitectureTab:
         assert resp.status_code == 200
         assert "initHowItWorks" in resp.text
         assert "how-it-works.js" in resp.text
+
+
+# ── helpers ───────────────────────────────────────────────────────────────────
+
+_CHANGE_ID = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+_CHANGE_ID_2 = "11111111-2222-3333-4444-555555555555"
+
+
+def _make_record(
+    change_id: str = _CHANGE_ID,
+    actor_id: str = "signalscribe",
+    event_type: EventType = EventType.AGENT_INVOCATION,
+    ts_offset: int = 0,
+) -> AuditRecord:
+    return AuditRecord(
+        audit_id="ffffffff-eeee-dddd-cccc-bbbbbbbbbbbb",
+        timestamp=datetime(2026, 4, 24, 12, 0, ts_offset, tzinfo=timezone.utc),
+        event_type=event_type,
+        change_id=change_id,
+        actor=Actor(type=ActorType.AGENT, id=actor_id),
+        action="invoked",
+        input_hash="a" * 64,
+        output_summary="gate 1: COMMUNICATE",
+        outcome=AuditOutcome.SUCCESS,
+    )
+
+
+# ── route tests ───────────────────────────────────────────────────────────────
+
+
+class TestAuditRoute:
+    def test_valid_change_id_with_records_returns_200(self) -> None:
+        record = _make_record()
+        mock_writer = MagicMock()
+        mock_writer.read_chain.return_value = [record]
+
+        with patch("pulsecraft.demo.server.AuditWriter", return_value=mock_writer):
+            resp = client.get(f"/api/audit/{_CHANGE_ID}")
+
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["change_id"] == _CHANGE_ID
+        assert isinstance(data["records"], list)
+        assert len(data["records"]) == 1
+
+    def test_valid_uuid_with_no_records_returns_404(self) -> None:
+        mock_writer = MagicMock()
+        mock_writer.read_chain.return_value = []
+
+        with patch("pulsecraft.demo.server.AuditWriter", return_value=mock_writer):
+            resp = client.get(f"/api/audit/{_CHANGE_ID_2}")
+
+        assert resp.status_code == 404
+
+    def test_invalid_format_returns_400(self) -> None:
+        """Directory traversal and non-UUID inputs must be rejected before AuditWriter is called."""
+        for bad_id in ["../../etc/passwd", "not-a-uuid", "12345", "../secrets"]:
+            resp = client.get(f"/api/audit/{bad_id}")
+            assert resp.status_code in (400, 404), f"expected 400/404 for {bad_id!r}, got {resp.status_code}"
+
+    def test_records_sorted_by_timestamp_ascending(self) -> None:
+        r1 = _make_record(ts_offset=0)
+        r2 = _make_record(ts_offset=5)
+        r3 = _make_record(ts_offset=10)
+        mock_writer = MagicMock()
+        # Return in reverse order to verify server does not re-sort (read_chain already sorts)
+        mock_writer.read_chain.return_value = [r1, r2, r3]
+
+        with patch("pulsecraft.demo.server.AuditWriter", return_value=mock_writer):
+            resp = client.get(f"/api/audit/{_CHANGE_ID}")
+
+        assert resp.status_code == 200
+        timestamps = [r["timestamp"] for r in resp.json()["records"]]
+        assert timestamps == sorted(timestamps)
+
+    def test_record_has_expected_keys(self) -> None:
+        record = _make_record()
+        mock_writer = MagicMock()
+        mock_writer.read_chain.return_value = [record]
+
+        with patch("pulsecraft.demo.server.AuditWriter", return_value=mock_writer):
+            resp = client.get(f"/api/audit/{_CHANGE_ID}")
+
+        rec = resp.json()["records"][0]
+        for key in ("audit_id", "timestamp", "event_type", "change_id", "actor", "action", "outcome"):
+            assert key in rec, f"missing key: {key}"

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import structlog
@@ -13,6 +14,11 @@ from pydantic import BaseModel
 from pulsecraft.demo.event_bus import bus
 from pulsecraft.demo.events import serialize_to_sse
 from pulsecraft.demo.instrumented_run import SCENARIOS, get_scenario, start_run
+from pulsecraft.orchestrator.audit import AuditWriter
+
+_UUID_RE = re.compile(
+    r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+)
 
 logger = structlog.get_logger(__name__)
 
@@ -80,6 +86,25 @@ async def stream_events(run_id: str) -> StreamingResponse:
             "Connection": "keep-alive",
         },
     )
+
+
+@app.get("/api/audit/{change_id}")
+async def get_audit_trail(change_id: str) -> dict:
+    """Return parsed audit records for a change_id as JSON.
+
+    Validates change_id as a UUID to prevent directory traversal.
+    Returns 404 when no records exist for the given change_id.
+    """
+    if not _UUID_RE.fullmatch(change_id):
+        raise HTTPException(status_code=400, detail="Invalid change_id — must be a UUID")
+    writer = AuditWriter()
+    records = writer.read_chain(change_id)
+    if not records:
+        raise HTTPException(status_code=404, detail=f"No audit records for {change_id!r}")
+    return {
+        "change_id": change_id,
+        "records": [r.model_dump(mode="json") for r in records],
+    }
 
 
 @app.get("/api/runs/{run_id}/explain")

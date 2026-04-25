@@ -795,11 +795,15 @@ function renderTerminalState(p) {
 
   doc.appendChild(section);
 
+  // Inline audit panel (expands below terminal state on button click)
+  const auditPanel = el('div', 'audit-panel');
+  doc.appendChild(auditPanel);
+
   // Footer
   const footer = el('div', 'run-footer');
   const auditBtn = el('button', 'footer-btn');
   auditBtn.textContent = 'View audit trail';
-  auditBtn.addEventListener('click', openDrawer);
+  auditBtn.addEventListener('click', () => toggleAuditPanel(auditBtn, auditPanel));
   const rerunBtn = el('button', 'footer-btn primary');
   rerunBtn.textContent = 'Run again';
   rerunBtn.addEventListener('click', () => runScenario(activeScenarioId));
@@ -1065,27 +1069,145 @@ function stopElapsedTimer() {
   if (elapsedTimer) { clearInterval(elapsedTimer); elapsedTimer = null; }
 }
 
-// ── Audit drawer ────────────────────────────────────────────────────────────
+// ── Inline audit panel ──────────────────────────────────────────────────────
 
-function openDrawer() {
-  const drawer = document.getElementById('audit-drawer');
-  const overlay = document.getElementById('drawer-overlay');
-  drawer.removeAttribute('hidden');
-  overlay.removeAttribute('hidden');
-
-  const body = document.getElementById('drawer-body');
-  if (changeId) {
-    body.textContent =
-      `Audit trail for change ${changeId.slice(0, 8)}…\n\n` +
-      `Run locally:\n  pulsecraft explain ${changeId.slice(0, 8)}\n\n` +
-      `Full change ID:\n  ${changeId}\n\n` +
-      `The /explain command renders every agent decision, policy override,\n` +
-      `HITL event, and delivery outcome with timing and cost.\n\n` +
-      `Use --all to show all runs for this change ID,\n` +
-      `or --list-runs to enumerate run boundaries.`;
-  } else {
-    body.innerHTML = '<p class="drawer__hint">No run completed yet. Start a scenario to see its audit trail.</p>';
+async function toggleAuditPanel(btn, panel) {
+  const isOpen = panel.classList.contains('audit-panel--open');
+  if (isOpen) {
+    panel.classList.remove('audit-panel--open');
+    btn.textContent = 'View audit trail';
+    return;
   }
+
+  if (!changeId) {
+    panel.innerHTML = '<div class="audit-panel__error">No run completed yet.</div>';
+    panel.classList.add('audit-panel--open');
+    btn.textContent = 'Hide audit trail';
+    return;
+  }
+
+  btn.textContent = 'Loading…';
+  btn.disabled = true;
+
+  try {
+    const resp = await fetch(`/api/audit/${changeId}`);
+    if (resp.ok) {
+      const data = await resp.json();
+      panel.innerHTML = '';
+      panel.appendChild(buildAuditPanel(data.records, data.change_id));
+    } else {
+      const err = await resp.json().catch(() => ({}));
+      panel.innerHTML = `<div class="audit-panel__error">${escHtml(err.detail || 'Could not load audit records.')}</div>`;
+    }
+  } catch (_) {
+    panel.innerHTML = '<div class="audit-panel__error">Network error — check that the demo server is running.</div>';
+  }
+
+  panel.classList.add('audit-panel--open');
+  btn.textContent = 'Hide audit trail';
+  btn.disabled = false;
+}
+
+function _auditPillClass(actorId) {
+  if (actorId === 'signalscribe') return 'audit-pill--ss';
+  if (actorId === 'buatlas')      return 'audit-pill--ba';
+  if (actorId === 'pushpilot')    return 'audit-pill--pp';
+  if (['pre_ingest', 'post_agent', 'pre_deliver', 'audit_hook'].includes(actorId)) return 'audit-pill--hook';
+  return 'audit-pill--orch';
+}
+
+function _auditGroupLabel(actorId, summary) {
+  const LABELS = {
+    signalscribe: 'SignalScribe',
+    pushpilot: 'PushPilot',
+    orchestrator: 'Orchestrator',
+    pre_ingest: 'Hook · pre_ingest',
+    post_agent: 'Hook · post_agent',
+    pre_deliver: 'Hook · pre_deliver',
+    audit_hook: 'Hook · audit',
+  };
+  if (actorId === 'buatlas') {
+    const buMatch = (summary || '').match(/\b(bu_[a-z]+)\b/);
+    return buMatch ? `BUAtlas · ${buMatch[1]}` : 'BUAtlas';
+  }
+  return LABELS[actorId] || actorId;
+}
+
+function _fmtAuditTs(isoStr) {
+  const d = new Date(isoStr);
+  const hh = String(d.getUTCHours()).padStart(2, '0');
+  const mm = String(d.getUTCMinutes()).padStart(2, '0');
+  const ss = String(d.getUTCSeconds()).padStart(2, '0');
+  const ms = String(d.getUTCMilliseconds()).padStart(3, '0');
+  return `${hh}:${mm}:${ss}.${ms}`;
+}
+
+function buildAuditPanel(records, cid) {
+  const wrap = el('div', 'audit-panel__inner');
+
+  // Header
+  const hdr = el('div', 'audit-panel__header');
+  const title = el('span', 'audit-panel__title');
+  title.textContent = 'Audit trail';
+  const idSpan = el('span', 'audit-panel__id');
+  idSpan.textContent = cid.slice(0, 8) + '…';
+  idSpan.title = cid;
+  hdr.appendChild(title);
+  hdr.appendChild(idSpan);
+  wrap.appendChild(hdr);
+
+  const body = el('div', 'audit-panel__body');
+  wrap.appendChild(body);
+
+  if (!records || records.length === 0) {
+    const empty = el('p', 'audit-panel__error');
+    empty.textContent = 'No records in this audit log.';
+    body.appendChild(empty);
+    return wrap;
+  }
+
+  let lastGroupKey = null;
+
+  records.forEach(r => {
+    const actorId = r.actor?.id || 'orchestrator';
+    const summary = r.output_summary || '';
+    const groupKey = actorId === 'buatlas'
+      ? 'buatlas:' + ((summary.match(/\b(bu_[a-z]+)\b/) || [])[1] || '')
+      : actorId;
+
+    if (groupKey !== lastGroupKey) {
+      const grpHdr = el('div', 'audit-group__label');
+      grpHdr.textContent = _auditGroupLabel(actorId, summary);
+      body.appendChild(grpHdr);
+      lastGroupKey = groupKey;
+    }
+
+    const row = el('div', 'audit-row');
+
+    // Timestamp
+    const ts = el('span', 'audit-ts');
+    ts.textContent = _fmtAuditTs(r.timestamp);
+    row.appendChild(ts);
+
+    // Actor pill
+    const pill = el('span', `audit-pill ${_auditPillClass(actorId)}`);
+    pill.textContent = actorId;
+    row.appendChild(pill);
+
+    // Content: verb + reason
+    const content = el('div', 'audit-content');
+    const verb = el('div', 'audit-verb');
+    verb.textContent = r.decision?.verb || r.output_summary || r.action;
+    const reason = el('div', 'audit-reason');
+    reason.textContent = r.decision?.reason || (r.decision ? '' : r.output_summary);
+    content.appendChild(verb);
+    if (reason.textContent) content.appendChild(reason);
+    row.appendChild(content);
+
+    body.appendChild(row);
+  });
+
+  return wrap;
 }
 
 function closeDrawer() {
