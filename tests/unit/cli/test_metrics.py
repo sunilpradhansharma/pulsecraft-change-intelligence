@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from pulsecraft.orchestrator.audit import AuditWriter
@@ -16,8 +16,12 @@ from pulsecraft.schemas.audit_record import (
 )
 
 
-def _ts(day: str = "2026-04-23", hour: int = 14, minute: int = 0) -> datetime:
-    return datetime(2026, 4, int(day[-2:]), hour, minute, tzinfo=UTC)
+def _ts(hour: int = 0, minute: int = 0) -> datetime:
+    """Return a timestamp anchored to now-1h with hour/minute as forward offsets.
+
+    Default (_ts()) is always within window_hours=24. Offsets preserve ordering.
+    """
+    return datetime.now(UTC) - timedelta(hours=1) + timedelta(hours=hour, minutes=minute)
 
 
 def _make_record(
